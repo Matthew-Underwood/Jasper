@@ -5,7 +5,7 @@ enum States { IDLE, FOLLOW }
 const MASS = 10.0
 const ARRIVE_DISTANCE = 10.0
 
-export(float) var speed = 200.0
+export(float) var speed = 120.0
 var _state = null
 
 var _path = []
