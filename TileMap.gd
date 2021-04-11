@@ -1,6 +1,6 @@
 extends TileMap
 
-const BASE_LINE_WIDTH = 3.0
+const BASE_LINE_WIDTH = 1.0
 const DRAW_COLOR = Color.white
 var _map : Map
 var _pointPath = []
@@ -13,7 +13,7 @@ var _obstacles : Array
 func _ready():
 	var pathingFactory = load("res://classes/pathing_factory.gd")
 	var map = load("res://classes/map.gd")
-	_map = map.new(Vector2(16, 16))
+	_map = map.new(Vector2(32, 19))
 	pathingFactory = pathingFactory.new()
 	_pathing = pathingFactory.create(get_used_cells_by_id(0), _map)
 	
