@@ -2,8 +2,9 @@ extends TileMap
 
 const BASE_LINE_WIDTH = 1.0
 const DRAW_COLOR = Color.white
+var _characterInfo : CharacterInfo
 var _map : Map
-var _pointPath = []
+var _pointPaths : Dictionary
 var _halfCellSize = cell_size / 2
 var pathStartPosition = Vector2() setget _setPathStartPosition
 var pathEndPosition = Vector2() setget _setPathEndPosition
@@ -18,28 +19,29 @@ func _ready():
 	_pathing = pathingFactory.create(get_used_cells_by_id(0), _map)
 	
 func _draw():
-	if not _pointPath:
+	if _characterInfo == null || !_pointPaths.has(_characterInfo.getId()):
 		return
-	var point_start = _pointPath[0]
-	var point_end = _pointPath[len(_pointPath) - 1]
+	var point_start = _pointPaths[_characterInfo.getId()][0]
+	var point_end = _pointPaths[_characterInfo.getId()][len(_pointPaths[_characterInfo.getId()]) - 1]
 
 	set_cell(point_start.x, point_start.y, 1)
 	set_cell(point_end.x, point_end.y, 2)
 
 	var last_point = map_to_world(Vector2(point_start.x, point_start.y)) + _halfCellSize
-	for index in range(1, len(_pointPath)):
-		var current_point = map_to_world(Vector2(_pointPath[index].x, _pointPath[index].y)) + _halfCellSize
-		draw_line(last_point, current_point, DRAW_COLOR, BASE_LINE_WIDTH, true)
-		draw_circle(current_point, BASE_LINE_WIDTH * 2.0, DRAW_COLOR)
+	for index in range(1, len(_pointPaths[_characterInfo.getId()])):
+		var current_point = map_to_world(Vector2(_pointPaths[_characterInfo.getId()][index].x, _pointPaths[_characterInfo.getId()][index].y)) + _halfCellSize
+		draw_line(last_point, current_point, _characterInfo.getColour(), BASE_LINE_WIDTH, true)
+		draw_circle(current_point, BASE_LINE_WIDTH * 2.0, _characterInfo.getColour())
 		last_point = current_point
 		
 		
-func getPath(world_start, world_end):
+func getPath(characterInfo : CharacterInfo, world_start : Vector2, world_end : Vector2):
+	_characterInfo = characterInfo
 	self.pathStartPosition = world_to_map(world_start)
 	self.pathEndPosition = world_to_map(world_end)
 	_recalculatePath()
 	var path_world = []
-	for point in _pointPath:
+	for point in _pointPaths[_characterInfo.getId()]:
 		var point_world = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
 		path_world.append(point_world)
 	return path_world
@@ -48,15 +50,16 @@ func _recalculatePath():
 	_clearPreviousPathDrawing()
 	# This method gives us an array of points. Note you need the start and
 	# end points' indices as input.
-	_pointPath = _pathing.getPath(pathStartPosition, pathEndPosition)
+	#TODO convert this to dict
+	_pointPaths[_characterInfo.getId()] = _pathing.getPath(pathStartPosition, pathEndPosition)
 	# Redraw the lines and circles from the start to the end point.
 	update()
 	
 func _clearPreviousPathDrawing():
-	if not _pointPath:
+	if not _pointPaths.has(_characterInfo.getId()):
 		return
-	var point_start = _pointPath[0]
-	var point_end = _pointPath[len(_pointPath) - 1]
+	var point_start = _pointPaths[_characterInfo.getId()][0]
+	var point_end = _pointPaths[_characterInfo.getId()][len(_pointPaths[_characterInfo.getId()]) - 1]
 	set_cell(point_start.x, point_start.y, -1)
 	set_cell(point_end.x, point_end.y, -1)
 

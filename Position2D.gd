@@ -13,21 +13,23 @@ var _target_point_world = Vector2()
 var _target_position = Vector2()
 
 var _velocity = Vector2()
+var _characterInfo
 
 func _ready():
+	var characterInfo = load("res://classes/character_info.gd")
+	_characterInfo = characterInfo.new(1, Color.red)
 	_change_state(States.IDLE)
 
-
-func _process(_delta):
-	if _state != States.FOLLOW:
-		return
-	var _arrived_to_next_point = _move_to(_target_point_world)
-	if _arrived_to_next_point:
-		_path.remove(0)
-		if len(_path) == 0:
-			_change_state(States.IDLE)
-			return
-		_target_point_world = _path[0]
+#func _process(_delta):
+#	if _state != States.FOLLOW:
+#		return
+#	var _arrived_to_next_point = _move_to(_target_point_world)
+#	if _arrived_to_next_point:
+#		_path.remove(0)
+#		if len(_path) == 0:
+#			_change_state(States.IDLE)
+#			return
+#		_target_point_world = _path[0]
 
 
 func _unhandled_input(event):
@@ -51,7 +53,11 @@ func _move_to(world_position):
 
 func _change_state(new_state):
 	if new_state == States.FOLLOW:
-		_path = get_parent().get_node("TileMap").getPath(position, _target_position)
+		_path = get_node("/root/Node2D/TileMap").getPath(
+			_characterInfo,
+			position,
+			_target_position
+		)
 		if not _path or len(_path) == 1:
 			_change_state(States.IDLE)
 			return
