@@ -37,10 +37,7 @@ func getCharacterInfo():
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):
 		var global_mouse_pos = get_global_mouse_position()
-		if Input.is_key_pressed(KEY_SHIFT):
-			global_position = global_mouse_pos
-		else:
-			_target_position = global_mouse_pos
+		_target_position = global_mouse_pos
 		_change_state(States.FOLLOW)
 
 

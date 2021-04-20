@@ -28,12 +28,18 @@ _global_script_classes=[ {
 "class": "PathingFactory",
 "language": "GDScript",
 "path": "res://classes/pathing_factory.gd"
+}, {
+"base": "Reference",
+"class": "WayPoints",
+"language": "GDScript",
+"path": "res://classes/pathing/waypoints.gd"
 } ]
 _global_script_class_icons={
 "CharacterInfo": "",
 "Map": "",
 "Pathing": "",
-"PathingFactory": ""
+"PathingFactory": "",
+"WayPoints": ""
 }
 
 [application]
