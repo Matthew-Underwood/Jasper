@@ -10,10 +10,13 @@ var pathStartPosition = Vector2() setget _setPathStartPosition
 var pathEndPosition = Vector2() setget _setPathEndPosition
 var _pathing : Pathing
 var _obstacles : Array
+var _waypoints: WayPoints
 
 func _ready():
 	var pathingFactory = load("res://classes/pathing_factory.gd")
+	var waypoints = load("res://classes/pathing/waypoints.gd")
 	var map = load("res://classes/map.gd")
+	_waypoints = waypoints.new()
 	_map = map.new(Vector2(32, 19))
 	pathingFactory = pathingFactory.new()
 	_pathing = pathingFactory.create(get_used_cells_by_id(0), _map)
@@ -21,30 +24,28 @@ func _ready():
 func _draw():
 	if _characterInfo == null || !_pointPaths.has(_characterInfo.getId()) || _pointPaths[_characterInfo.getId()].empty():
 		return
-	var point_start = _pointPaths[_characterInfo.getId()][0]
-	var point_end = _pointPaths[_characterInfo.getId()][len(_pointPaths[_characterInfo.getId()]) - 1]
-
-	set_cell(point_start.x, point_start.y, 1)
-	set_cell(point_end.x, point_end.y, 2)
-
-	var last_point = map_to_world(Vector2(point_start.x, point_start.y)) + _halfCellSize
+	#var startPoint = _waypoints.getItem(_characterInfo.getId(), 0)
+	for waypoint in _waypoints.getAll(_characterInfo.getId()):
+		set_cell(waypoint["end"].x, waypoint["end"].y, 2)
 	for index in range(1, len(_pointPaths[_characterInfo.getId()])):
+		var previousIndex = index - 1
+		var last_point = map_to_world(Vector2(_pointPaths[_characterInfo.getId()][previousIndex].x, _pointPaths[_characterInfo.getId()][previousIndex].y)) + _halfCellSize
 		var current_point = map_to_world(Vector2(_pointPaths[_characterInfo.getId()][index].x, _pointPaths[_characterInfo.getId()][index].y)) + _halfCellSize
 		draw_line(last_point, current_point, _characterInfo.getColour(), BASE_LINE_WIDTH, true)
 		draw_circle(current_point, BASE_LINE_WIDTH * 2.0, _characterInfo.getColour())
-		last_point = current_point
 		
 func getPath(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
-	for id in _pointPaths:
+	
+	for id in _waypoints.getCharacterIds():
 		if id != _characterInfo.getId():
 			_clearPreviousPathDrawing(id)
-
+	_recalculatePath(_characterInfo.getId())
 		
-func createPath(characterInfo : CharacterInfo, world_start : Vector2, world_end : Vector2):
+func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint : Vector2):
 	_characterInfo = characterInfo
-	self.pathStartPosition = world_to_map(world_start)
-	self.pathEndPosition = world_to_map(world_end)
+	self.pathStartPosition = world_to_map(startPoint)
+	self.pathEndPosition = world_to_map(targetPoint)
 	_recalculatePath(_characterInfo.getId())
 	var path_world = []
 	for point in _pointPaths[_characterInfo.getId()]:
@@ -53,21 +54,26 @@ func createPath(characterInfo : CharacterInfo, world_start : Vector2, world_end 
 	return path_world
 
 func _recalculatePath(id : int):
-	_clearPreviousPathDrawing(id)
+	if !_waypoints.has(_characterInfo.getId(), 0):
+		return
+	#_clearPreviousPathDrawing(id)
 	# This method gives us an array of points. Note you need the start and
 	# end points' indices as input.
-	#TODO convert this to dict
-	_pointPaths[id] = _pathing.getPath(pathStartPosition, pathEndPosition)
-	# Redraw the lines and circles from the start to the end point.
+	#TODO dedupe waypoints
+	_pointPaths[id] = []
+	
+	for waypoint in _waypoints.getAll(_characterInfo.getId()):
+		var points = _pathing.getPath(waypoint["start"], waypoint["end"])
+		for point in points:
+			_pointPaths[id].append(point)
 	update()
 	
 func _clearPreviousPathDrawing(id : int):
 	if not _pointPaths.has(id) || _pointPaths[id].empty():
 		return
-	var point_start = _pointPaths[id][0]
-	var point_end = _pointPaths[id][len(_pointPaths[id]) - 1]
-	set_cell(point_start.x, point_start.y, -1)
-	set_cell(point_end.x, point_end.y, -1)
+	for waypoint in _waypoints.getAll(id):
+		set_cell(waypoint["end"].x, waypoint["end"].y, -1)
+		
 	update()
 
 # Setters for the start and end path values.
@@ -76,12 +82,7 @@ func _setPathStartPosition(value):
 		return
 	if _map.isOutsideMapBounds(value):
 		return
-
-	set_cell(pathStartPosition.x, pathStartPosition.y, -1)
-	set_cell(value.x, value.y, 1)
 	pathStartPosition = value
-	if pathEndPosition and pathEndPosition != pathStartPosition:
-		_recalculatePath(_characterInfo.getId())
 
 
 func _setPathEndPosition(value):
@@ -89,9 +90,10 @@ func _setPathEndPosition(value):
 		return
 	if _map.isOutsideMapBounds(value):
 		return
-
-	set_cell(pathStartPosition.x, pathStartPosition.y, -1)
+	if !_waypoints.has(_characterInfo.getId(), 0):
+		_waypoints.add(_characterInfo.getId(), pathStartPosition, value)
+	else:
+		var lastItem = _waypoints.getLastItem(_characterInfo.getId())
+		_waypoints.add(_characterInfo.getId(), lastItem["end"], value)
 	set_cell(value.x, value.y, 2)
 	pathEndPosition = value
-	if pathStartPosition != value:
-		_recalculatePath(_characterInfo.getId())
