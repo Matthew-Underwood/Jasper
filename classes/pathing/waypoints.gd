@@ -32,3 +32,9 @@ func has(characterId : int, waypointId : int) -> bool:
 	if _waypoints[characterId].empty():
 		return false
 	return waypointId <= (_waypoints[characterId].size() - 1)
+	
+func hasPosition(characterId : int, pos : Vector2) -> bool:
+	for waypoint in getAll(characterId):
+		if waypoint["start"] == pos || waypoint["end"] == pos:
+			return true
+	return false
