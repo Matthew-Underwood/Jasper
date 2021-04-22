@@ -11,6 +11,7 @@ var pathEndPosition = Vector2() setget _setPathEndPosition
 var _pathing : Pathing
 var _obstacles : Array
 var _waypoints: WayPoints
+var _previousClickedWayPoint
 
 func _ready():
 	var pathingFactory = load("res://classes/pathing_factory.gd")
@@ -84,7 +85,23 @@ func _clearPreviousPathDrawing(id : int):
 		set_cell(waypoint["end"].x, waypoint["end"].y, -1)
 		
 	update()
-
+	
+func _input(event):
+	if event is InputEventMouseButton && event.is_pressed():
+		var clickedPos = world_to_map(event.position)
+		var cell = get_cell(clickedPos.x, clickedPos.y)
+		if cell == 2:
+			var id = _characterInfo.getId()
+			if _previousClickedWayPoint != null && _waypoints.hasPosition(id, _previousClickedWayPoint):
+				set_cellv(_previousClickedWayPoint, 2) 
+			elif _previousClickedWayPoint != null:
+				set_cellv(_previousClickedWayPoint, get_cellv(_previousClickedWayPoint)) 
+				
+			set_cellv(clickedPos, 3)
+			_previousClickedWayPoint = clickedPos
+			get_tree().set_input_as_handled()
+		
+	
 func _setPathStartPosition(value):
 	value = world_to_map(value)
 	if value in _obstacles:
