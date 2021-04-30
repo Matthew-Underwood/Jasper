@@ -3,7 +3,6 @@ class_name CharacterInfo
 var _id : int
 var _colour : Color
 
-
 func _init(id : int, colour : Color):
 	_id = id
 	_colour = colour

@@ -36,7 +36,6 @@ func getCharacterInfo():
 
 func _unhandled_input(event):
 	if event.is_action_pressed("confirm_click"):
-		print("unhandled")
 		var global_mouse_pos = get_global_mouse_position()
 		_target_position = global_mouse_pos
 		_change_state(States.FOLLOW)
@@ -54,7 +53,6 @@ func _move_to(world_position):
 func _change_state(new_state):
 	if new_state == States.FOLLOW:
 		if get_node("/root/Node2D/TileMap").hasPath(_characterInfo, _target_position):
-			print("has path")
 			return
 		
 		_path = get_node("/root/Node2D/TileMap").createPath(
@@ -80,3 +78,8 @@ func _on_Area2D_mouse_entered():
 func _on_Area2D_mouse_exited():
 	set_process_unhandled_input(true)
 	
+
+func _on_Area2D_input_event(viewport, event, shape_idx):
+	if event.is_action_pressed("confirm_click"):
+		var tileMap = get_node("/root/Node2D/TileMap")
+		tileMap.getPath(_characterInfo)

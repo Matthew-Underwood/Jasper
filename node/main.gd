@@ -5,7 +5,7 @@ extends Node2D
 func _ready():
 	var characterPositions = [Vector2(48, 48), Vector2(48, 496), Vector2(656, 496)]
 	var characterColours = [Color.green, Color.red, Color.red]
-	var characterScene = preload("res://character.tscn")
+	var characterScene = preload("res://scenes/character.tscn")
 	var characterInfo = load("res://classes/character_info.gd")
 	var charactersNode = get_node("Characters")
 	
