@@ -12,11 +12,16 @@ var _pathing : Pathing
 var _obstacles : Array
 var _waypoints: WayPoints
 var _previousClickedWayPoint
+var _selected = false
+var _waypointNode
+var _wayPointParentNode
 
 func _ready():
+	_wayPointParentNode = get_tree().get_root().get_node("Node2D/WayPoints")
 	var pathingFactory = load("res://classes/pathing_factory.gd")
 	var waypoints = load("res://classes/pathing/waypoints.gd")
 	var map = load("res://classes/map.gd")
+	_waypointNode = load("res://waypoint.tscn")
 	_waypoints = waypoints.new()
 	_map = map.new(Vector2(32, 19))
 	pathingFactory = pathingFactory.new()
@@ -30,9 +35,6 @@ func _draw():
 	
 	if !_pointPaths.has(id) || _pointPaths[id].empty():
 		return
-		
-	for waypoint in _waypoints.getAll(id):
-		set_cell(waypoint["end"].x, waypoint["end"].y, 2)
 		
 	for index in range(1, len(_pointPaths[id])):
 		var previousIndex = index - 1
@@ -49,7 +51,15 @@ func getPath(characterInfo : CharacterInfo):
 		if id != currentId:
 			_clearPreviousPathDrawing(id)
 	_recalculatePath(currentId)
+	if !_waypoints.has(currentId, 0):
+		return
+	for waypoint in _waypoints.getAll(currentId):
+		_addWayPointNode(waypoint["end"])
 		
+		
+func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
+	return _waypoints.hasPosition(characterInfo.getId(), world_to_map(targetPoint))
+	
 func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint : Vector2):
 	
 	_characterInfo = characterInfo
@@ -75,31 +85,32 @@ func _recalculatePath(id : int):
 		var points = _pathing.getPath(waypoint["start"], waypoint["end"])
 		for point in points:
 			_pointPaths[id].append(point)
+	
 	update()
 	
 func _clearPreviousPathDrawing(id : int):
 	if !_waypoints.has(id, 0):
 		return
 		
-	for waypoint in _waypoints.getAll(id):
-		set_cell(waypoint["end"].x, waypoint["end"].y, -1)
-		
+	for wayPoint in _wayPointParentNode.get_children():
+		wayPoint.queue_free()
 	update()
 	
-func _input(event):
-	if event is InputEventMouseButton && event.is_pressed():
-		var clickedPos = world_to_map(event.position)
-		var cell = get_cell(clickedPos.x, clickedPos.y)
-		if cell == 2:
-			var id = _characterInfo.getId()
-			if _previousClickedWayPoint != null && _waypoints.hasPosition(id, _previousClickedWayPoint):
-				set_cellv(_previousClickedWayPoint, 2) 
-			elif _previousClickedWayPoint != null:
-				set_cellv(_previousClickedWayPoint, get_cellv(_previousClickedWayPoint)) 
-				
-			set_cellv(clickedPos, 3)
-			_previousClickedWayPoint = clickedPos
-			get_tree().set_input_as_handled()
+#func _input(event):
+#	if event is InputEventMouseButton && event.is_pressed():
+#		var clickedPos = world_to_map(event.position)
+#		var cell = get_cell(clickedPos.x, clickedPos.y)
+#		if cell == 2:
+#			var id = _characterInfo.getId()
+#			if _previousClickedWayPoint != null && _waypoints.hasPosition(id, _previousClickedWayPoint):
+#				set_cellv(_previousClickedWayPoint, 2) 
+#			elif _previousClickedWayPoint != null:
+#				set_cellv(_previousClickedWayPoint, get_cellv(_previousClickedWayPoint)) 
+#
+#			set_cellv(clickedPos, 3)
+#			_selected = true
+#			_previousClickedWayPoint = clickedPos
+#			get_tree().set_input_as_handled()
 		
 	
 func _setPathStartPosition(value):
@@ -121,5 +132,17 @@ func _setPathEndPosition(value):
 	else:
 		var lastItem = _waypoints.getLastItem(_characterInfo.getId())
 		_waypoints.add(_characterInfo.getId(), lastItem["end"], value)
-	set_cell(value.x, value.y, 2)
+	_addWayPointNode(value)
 	pathEndPosition = value
+	
+	
+func _getTileMapCentrePoint(mapPoint : Vector2) -> Vector2:
+	var x = mapPoint.x * cell_size.x + (cell_size.x / 2)
+	var y = mapPoint.y * cell_size.y + (cell_size.y / 2)
+	return Vector2(x, y)
+	
+func _addWayPointNode(mapPoint : Vector2):
+	var waypointNode = _waypointNode.instance()
+	waypointNode.setWayPointParent(_wayPointParentNode)
+	waypointNode.position = _getTileMapCentrePoint(mapPoint)
+	_wayPointParentNode.add_child(waypointNode)	

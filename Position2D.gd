@@ -35,7 +35,8 @@ func getCharacterInfo():
 #		_target_point_world = _path[0]
 
 func _unhandled_input(event):
-	if event.is_action_pressed("click"):
+	if event.is_action_pressed("confirm_click"):
+		print("unhandled")
 		var global_mouse_pos = get_global_mouse_position()
 		_target_position = global_mouse_pos
 		_change_state(States.FOLLOW)
@@ -52,6 +53,10 @@ func _move_to(world_position):
 
 func _change_state(new_state):
 	if new_state == States.FOLLOW:
+		if get_node("/root/Node2D/TileMap").hasPath(_characterInfo, _target_position):
+			print("has path")
+			return
+		
 		_path = get_node("/root/Node2D/TileMap").createPath(
 			_characterInfo,
 			position,
