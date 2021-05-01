@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://TileMap.gd" type="Script" id=1]
-[ext_resource path="res://Main.gd" type="Script" id=2]
+[ext_resource path="res://node/tile_map.gd" type="Script" id=1]
+[ext_resource path="res://node/main.gd" type="Script" id=2]
 [ext_resource path="res://tile_set/tileset.tres" type="TileSet" id=3]
 
 [node name="Node2D" type="Node2D"]
