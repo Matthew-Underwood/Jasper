@@ -8,7 +8,9 @@
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 16, 16 )
 
-[node name="Position2D" type="Position2D"]
+[node name="Position2D" type="Position2D" groups=[
+"characters",
+]]
 material = SubResource( 1 )
 script = ExtResource( 1 )
 
