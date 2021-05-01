@@ -45,7 +45,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Jasper"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://scenes/main.tscn"
 config/icon="res://icon.png"
 
 [input]

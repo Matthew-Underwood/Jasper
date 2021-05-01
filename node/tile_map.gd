@@ -11,8 +11,6 @@ var pathEndPosition = Vector2() setget _setPathEndPosition
 var _pathing : Pathing
 var _obstacles : Array
 var _waypoints: WayPoints
-var _previousClickedWayPoint
-var _selected = false
 var _waypointNode
 var _wayPointParentNode
 
@@ -21,7 +19,7 @@ func _ready():
 	var pathingFactory = load("res://classes/pathing_factory.gd")
 	var waypoints = load("res://classes/pathing/waypoints.gd")
 	var map = load("res://classes/map.gd")
-	_waypointNode = load("res://waypoint.tscn")
+	_waypointNode = load("res://scenes/waypoint.tscn")
 	_waypoints = waypoints.new()
 	_map = map.new(Vector2(32, 19))
 	pathingFactory = pathingFactory.new()
@@ -44,7 +42,6 @@ func _draw():
 		draw_circle(currentPoint, BASE_LINE_WIDTH * 2.0, colour)
 		
 func getPath(characterInfo : CharacterInfo):
-	
 	_characterInfo = characterInfo
 	var currentId = _characterInfo.getId()
 	for id in _waypoints.getCharacterIds():
@@ -96,23 +93,6 @@ func _clearPreviousPathDrawing(id : int):
 		wayPoint.queue_free()
 	update()
 	
-#func _input(event):
-#	if event is InputEventMouseButton && event.is_pressed():
-#		var clickedPos = world_to_map(event.position)
-#		var cell = get_cell(clickedPos.x, clickedPos.y)
-#		if cell == 2:
-#			var id = _characterInfo.getId()
-#			if _previousClickedWayPoint != null && _waypoints.hasPosition(id, _previousClickedWayPoint):
-#				set_cellv(_previousClickedWayPoint, 2) 
-#			elif _previousClickedWayPoint != null:
-#				set_cellv(_previousClickedWayPoint, get_cellv(_previousClickedWayPoint)) 
-#
-#			set_cellv(clickedPos, 3)
-#			_selected = true
-#			_previousClickedWayPoint = clickedPos
-#			get_tree().set_input_as_handled()
-		
-	
 func _setPathStartPosition(value):
 	value = world_to_map(value)
 	if value in _obstacles:
@@ -143,6 +123,5 @@ func _getTileMapCentrePoint(mapPoint : Vector2) -> Vector2:
 	
 func _addWayPointNode(mapPoint : Vector2):
 	var waypointNode = _waypointNode.instance()
-	waypointNode.setWayPointParent(_wayPointParentNode)
 	waypointNode.position = _getTileMapCentrePoint(mapPoint)
 	_wayPointParentNode.add_child(waypointNode)	
