@@ -13,6 +13,7 @@ var _obstacles : Array
 var _waypoints: WayPoints
 var _waypointNode
 var _wayPointParentNode
+var _waypointIds
 
 func _ready():
 	_wayPointParentNode = get_tree().get_root().get_node("Node2D/WayPoints")
@@ -55,7 +56,8 @@ func getPath(characterInfo : CharacterInfo):
 		
 		
 func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
-	return _waypoints.hasPosition(characterInfo.getId(), world_to_map(targetPoint))
+	var worldPos = world_to_map(targetPoint)
+	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
 	
 func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint : Vector2):
 	
@@ -71,6 +73,20 @@ func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint
 		var point_world = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
 		pathWorld.append(point_world)
 	return pathWorld
+	
+
+func _process(delta : float):
+	if _characterInfo == null:
+		return
+	var id = _characterInfo.getId()
+	if Input.is_action_just_pressed("confirm_click"):
+		var clickedPosition = world_to_map(get_viewport().get_mouse_position())
+		_waypointIds = _waypoints.hasPosition(id, clickedPosition)
+	#TODO return false if null in WayPoint class
+	if Input.is_action_pressed("confirm_click") && _waypointIds != null && !_waypointIds.empty():
+		var heldPosition = world_to_map(get_viewport().get_mouse_position())
+		_waypoints.updatePosition(id, _waypointIds, heldPosition)
+		_recalculatePath(id)
 
 func _recalculatePath(id : int):
 	if !_waypoints.has(id, 0):
@@ -82,7 +98,6 @@ func _recalculatePath(id : int):
 		var points = _pathing.getPath(waypoint["start"], waypoint["end"])
 		for point in points:
 			_pointPaths[id].append(point)
-	
 	update()
 	
 func _clearPreviousPathDrawing(id : int):
@@ -124,4 +139,5 @@ func _getTileMapCentrePoint(mapPoint : Vector2) -> Vector2:
 func _addWayPointNode(mapPoint : Vector2):
 	var waypointNode = _waypointNode.instance()
 	waypointNode.position = _getTileMapCentrePoint(mapPoint)
+	waypointNode.setTileMap(self)
 	_wayPointParentNode.add_child(waypointNode)	
