@@ -21,4 +21,5 @@ texture = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ChangeState"]
 shape = SubResource( 1 )
-[connection signal="input_event" from="ChangeState" to="." method="_on_ChangeState_input_event"]
+[connection signal="mouse_entered" from="ChangeState" to="." method="_on_ChangeState_mouse_entered"]
+[connection signal="mouse_exited" from="ChangeState" to="." method="_on_ChangeState_mouse_exited"]

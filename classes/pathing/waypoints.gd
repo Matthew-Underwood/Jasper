@@ -33,10 +33,22 @@ func has(characterId : int, waypointId : int) -> bool:
 		return false
 	return waypointId <= (_waypoints[characterId].size() - 1)
 	
-func hasPosition(characterId : int, pos : Vector2) -> bool:
+#TODO update this to return array of the index and start or end of hte one to update
+func hasPosition(characterId : int, pos : Vector2) -> Array:
+	var found = []
+	var count = 0
 	if !has(characterId, 0):
-		return false
+		return found
 	for waypoint in getAll(characterId):
 		if waypoint["start"] == pos || waypoint["end"] == pos:
-			return true
-	return false
+			found.append(count)
+		count += 1
+	return found
+	
+func updatePosition(characterId : int, ids : Array, positionToUpdate : Vector2) -> void:
+	if ids.size() == 1:
+		_waypoints[characterId][ids[0]]["end"] = positionToUpdate
+		return
+	if ids.size() == 2:
+		_waypoints[characterId][ids[0]]["end"] = positionToUpdate
+		_waypoints[characterId][ids[1]]["start"] = positionToUpdate
