@@ -52,6 +52,7 @@ func getPath(characterInfo : CharacterInfo):
 	if !_waypoints.has(currentId, 0):
 		return
 	for waypoint in _waypoints.getAll(currentId):
+		print("add")
 		_addWayPointNode(waypoint["end"])
 		
 		
@@ -63,12 +64,11 @@ func isWalkable(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
 	return _pathing.isWalkable(worldPos)
 	
-func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint : Vector2):
-	
+func createPath(characterInfo : CharacterInfo, targetPoint : Vector2):
 	_characterInfo = characterInfo
 	var currentId = characterInfo.getId()
 	var pathWorld = []
-	self.pathStartPosition = startPoint
+	self.pathStartPosition = _characterInfo.getPosition()
 	self.pathEndPosition = targetPoint
 	
 	_recalculatePath(currentId)
@@ -85,9 +85,14 @@ func _process(delta : float):
 	var id = _characterInfo.getId()
 	if Input.is_action_just_pressed("confirm_click"):
 		var clickedPosition = world_to_map(get_viewport().get_mouse_position())
+		if clickedPosition == world_to_map(_characterInfo.getPosition()):
+			return
 		_waypointIds = _waypoints.hasPosition(id, clickedPosition)
 	#TODO return false if null in WayPoint class
 	if Input.is_action_pressed("confirm_click") && _waypointIds != null && !_waypointIds.empty():
+		var clickedPosition = world_to_map(get_viewport().get_mouse_position())
+		if clickedPosition == world_to_map(_characterInfo.getPosition()):
+			return
 		var heldPosition = world_to_map(get_viewport().get_mouse_position())
 		_waypoints.updatePosition(id, _waypointIds, heldPosition)
 		_recalculatePath(id)
