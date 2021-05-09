@@ -59,6 +59,10 @@ func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
 	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
 	
+func isWalkable(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
+	var worldPos = world_to_map(targetPoint)
+	return _pathing.isWalkable(worldPos)
+	
 func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint : Vector2):
 	
 	_characterInfo = characterInfo
