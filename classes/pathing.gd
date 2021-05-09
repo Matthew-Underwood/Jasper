@@ -27,6 +27,11 @@ func addWalkableCells(obstacle_list = []):
 			_aStar.add_point(point_index, Vector3(point.x, point.y, 0.0))
 	return points_array
 
+func isWalkable(point : Vector2) -> bool:
+	var pointIndex = _calculatePointIndex(point)
+	return _aStar.has_point(pointIndex)
+	
+
 # Once you added all points to the AStar node, you've got to connect them.
 # The points don't have to be on a grid: you can use this class
 # to create walkable graphs however you'd like.
