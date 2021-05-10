@@ -52,7 +52,6 @@ func getPath(characterInfo : CharacterInfo):
 	if !_waypoints.has(currentId, 0):
 		return
 	for waypoint in _waypoints.getAll(currentId):
-		print("add")
 		_addWayPointNode(waypoint["end"])
 		
 		
@@ -60,7 +59,7 @@ func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
 	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
 	
-func isWalkable(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
+func isWalkable(targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
 	return _pathing.isWalkable(worldPos)
 	
@@ -100,12 +99,15 @@ func _recalculatePath(id : int):
 	if !_waypoints.has(id, 0):
 		return
 		
-	_pointPaths[id] = []
+	var pointPaths = []
 	
 	for waypoint in _waypoints.getAll(id):
 		var points = _pathing.getPath(waypoint["start"], waypoint["end"])
+		if points == null:
+			return
 		for point in points:
-			_pointPaths[id].append(point)
+			pointPaths.append(point)
+	_pointPaths[id] = pointPaths
 	update()
 	
 func _clearPreviousPathDrawing(id : int):

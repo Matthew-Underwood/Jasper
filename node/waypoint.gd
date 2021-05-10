@@ -15,6 +15,7 @@ func _ready():
 	_plainNode = get_node("Plain")
 	get_tree().call_group_flags(2, "waypoints", "_deSelect")
 	_select()
+
 	
 func setTileMap(tileMap : TileMap):
 	_tileMap = tileMap
@@ -30,13 +31,16 @@ func _process(delta):
 		_select()
 	
 	if Input.is_action_pressed("confirm_click") && _drag:
-		var mapPos = _tileMap.world_to_map(get_viewport().get_mouse_position())
-		position = _tileMap._getTileMapCentrePoint(mapPos)
+		var pos = get_viewport().get_mouse_position()
+		if _tileMap.isWalkable(pos):
+			position = _tileMap._getTileMapCentrePoint(_tileMap.world_to_map(pos))
+
 
 func _select():
 	_selected = true
 	_selectedNode.visible = true
 	_plainNode.visible = false
+
 
 func _deSelect():
 	_selected = false
