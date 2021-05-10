@@ -80,6 +80,8 @@ func connectWalkableCells_diagonal(points_array):
 func getPath(path_start_position : Vector2, path_end_position : Vector2):
 	var start_point_index = _calculatePointIndex(path_start_position)
 	var end_point_index = _calculatePointIndex(path_end_position)
+	if !_aStar.has_point(start_point_index) or !_aStar.has_point(end_point_index):
+		return null
 	return _aStar.get_point_path(start_point_index, end_point_index)
 
 func _calculatePointIndex(point):

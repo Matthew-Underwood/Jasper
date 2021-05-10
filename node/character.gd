@@ -56,16 +56,14 @@ func _move_to(world_position):
 
 func _change_state(new_state):
 	if new_state == States.FOLLOW:
+		_characterInfo.setPosition(position)
 		#TODO is this misleading? Its checking for waypoint exists not the path
 		if _tileMap.hasPath(_characterInfo, _target_position):
 			return
-		if !_tileMap.isWalkable(_characterInfo, _target_position):
+		if !_tileMap.isWalkable(_target_position):
 			return
-		_path = _tileMap.createPath(
-			_characterInfo,
-			position,
-			_target_position
-		)
+		_path = _tileMap.createPath(_characterInfo,_target_position)
+		
 		if not _path or len(_path) == 1:
 			_change_state(States.IDLE)
 			return

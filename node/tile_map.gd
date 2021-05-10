@@ -59,16 +59,15 @@ func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
 	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
 	
-func isWalkable(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
+func isWalkable(targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
 	return _pathing.isWalkable(worldPos)
 	
-func createPath(characterInfo : CharacterInfo, startPoint : Vector2, targetPoint : Vector2):
-	
+func createPath(characterInfo : CharacterInfo, targetPoint : Vector2):
 	_characterInfo = characterInfo
 	var currentId = characterInfo.getId()
 	var pathWorld = []
-	self.pathStartPosition = startPoint
+	self.pathStartPosition = _characterInfo.getPosition()
 	self.pathEndPosition = targetPoint
 	
 	_recalculatePath(currentId)
@@ -84,24 +83,31 @@ func _process(delta : float):
 		return
 	var id = _characterInfo.getId()
 	if Input.is_action_just_pressed("confirm_click"):
-		var clickedPosition = world_to_map(get_viewport().get_mouse_position())
-		_waypointIds = _waypoints.hasPosition(id, clickedPosition)
+		var mousePos = world_to_map(get_viewport().get_mouse_position())
+		if _mousePositionMatchesCharacter(mousePos):
+			return
+		_waypointIds = _waypoints.hasPosition(id, mousePos)
 	#TODO return false if null in WayPoint class
 	if Input.is_action_pressed("confirm_click") && _waypointIds != null && !_waypointIds.empty():
-		var heldPosition = world_to_map(get_viewport().get_mouse_position())
-		_waypoints.updatePosition(id, _waypointIds, heldPosition)
+		var mousePos = world_to_map(get_viewport().get_mouse_position())
+		if _mousePositionMatchesCharacter(mousePos):
+			return
+		_waypoints.updatePosition(id, _waypointIds, mousePos)
 		_recalculatePath(id)
 
 func _recalculatePath(id : int):
 	if !_waypoints.has(id, 0):
 		return
 		
-	_pointPaths[id] = []
+	var pointPaths = []
 	
 	for waypoint in _waypoints.getAll(id):
 		var points = _pathing.getPath(waypoint["start"], waypoint["end"])
+		if points == null:
+			return
 		for point in points:
-			_pointPaths[id].append(point)
+			pointPaths.append(point)
+	_pointPaths[id] = pointPaths
 	update()
 	
 func _clearPreviousPathDrawing(id : int):
@@ -134,6 +140,8 @@ func _setPathEndPosition(value):
 	_addWayPointNode(value)
 	pathEndPosition = value
 	
+func _mousePositionMatchesCharacter(mousePos : Vector2) -> bool:
+	return mousePos == world_to_map(_characterInfo.getPosition())
 	
 func _getTileMapCentrePoint(mapPoint : Vector2) -> Vector2:
 	var x = mapPoint.x * cell_size.x + (cell_size.x / 2)
