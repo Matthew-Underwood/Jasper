@@ -84,17 +84,16 @@ func _process(delta : float):
 		return
 	var id = _characterInfo.getId()
 	if Input.is_action_just_pressed("confirm_click"):
-		var clickedPosition = world_to_map(get_viewport().get_mouse_position())
-		if clickedPosition == world_to_map(_characterInfo.getPosition()):
+		var mousePos = world_to_map(get_viewport().get_mouse_position())
+		if _mousePositionMatchesCharacter(mousePos):
 			return
-		_waypointIds = _waypoints.hasPosition(id, clickedPosition)
+		_waypointIds = _waypoints.hasPosition(id, mousePos)
 	#TODO return false if null in WayPoint class
 	if Input.is_action_pressed("confirm_click") && _waypointIds != null && !_waypointIds.empty():
-		var clickedPosition = world_to_map(get_viewport().get_mouse_position())
-		if clickedPosition == world_to_map(_characterInfo.getPosition()):
+		var mousePos = world_to_map(get_viewport().get_mouse_position())
+		if _mousePositionMatchesCharacter(mousePos):
 			return
-		var heldPosition = world_to_map(get_viewport().get_mouse_position())
-		_waypoints.updatePosition(id, _waypointIds, heldPosition)
+		_waypoints.updatePosition(id, _waypointIds, mousePos)
 		_recalculatePath(id)
 
 func _recalculatePath(id : int):
@@ -139,6 +138,8 @@ func _setPathEndPosition(value):
 	_addWayPointNode(value)
 	pathEndPosition = value
 	
+func _mousePositionMatchesCharacter(mousePos : Vector2) -> bool:
+	return mousePos == world_to_map(_characterInfo.getPosition())
 	
 func _getTileMapCentrePoint(mapPoint : Vector2) -> Vector2:
 	var x = mapPoint.x * cell_size.x + (cell_size.x / 2)
