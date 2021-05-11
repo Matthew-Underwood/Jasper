@@ -51,7 +51,6 @@ func getPath(characterInfo : CharacterInfo):
 	if !_waypoints.has(currentId, 0):
 		return
 	for waypoint in _waypoints.getAll(currentId):
-		print("get path")
 		_addWayPointNode(waypoint["end"])
 		
 		
@@ -68,7 +67,6 @@ func createPath(characterInfo : CharacterInfo, targetPoint : Vector2):
 	var currentId = characterInfo.getId()
 	var pathWorld = []
 	self.pathStartPosition = _characterInfo.getPosition()
-	print("create path")
 	self.pathEndPosition = targetPoint
 	
 	_recalculatePath(currentId)

@@ -43,11 +43,9 @@ func _deSelect():
 
 
 func _on_ChangeState_mouse_entered():
-	print("mouse on")
 	if Input.is_action_just_pressed("confirm_click"):
 		get_tree().call_group_flags(2, "waypoints", "_deSelect")
 		_select()
-		print("clicked")
 		_drag = true
 
 
