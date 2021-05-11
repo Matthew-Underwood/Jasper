@@ -5,7 +5,6 @@ var _plainNode
 var _waypointParent
 var _selected
 var _tileMap
-var _validMouseAction 
 var _drag
 
 
@@ -25,11 +24,6 @@ func _process(delta):
 	if Input.is_action_just_released("confirm_click"):
 		_drag = false
 		
-	if Input.is_action_just_pressed("confirm_click") && _validMouseAction:
-		_drag = true
-		get_tree().call_group_flags(2, "waypoints", "_deSelect")
-		_select()
-	
 	if Input.is_action_pressed("confirm_click") && _drag:
 		var pos = get_viewport().get_mouse_position()
 		if _tileMap.isWalkable(pos):
@@ -49,8 +43,14 @@ func _deSelect():
 
 
 func _on_ChangeState_mouse_entered():
-	_validMouseAction = true
+	print("mouse on")
+	if Input.is_action_just_pressed("confirm_click"):
+		get_tree().call_group_flags(2, "waypoints", "_deSelect")
+		_select()
+		print("clicked")
+		_drag = true
 
 
 func _on_ChangeState_mouse_exited():
-	_validMouseAction = false
+	#_validMouseAction = false
+	pass

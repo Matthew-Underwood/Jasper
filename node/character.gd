@@ -39,7 +39,7 @@ func getCharacterInfo():
 #		_target_point_world = _path[0]
 
 func _unhandled_input(event):
-	if event.is_action_pressed("confirm_click"):
+	if Input.is_action_just_pressed("confirm_click"):
 		var global_mouse_pos = get_global_mouse_position()
 		_target_position = global_mouse_pos
 		_change_state(States.FOLLOW)
@@ -59,11 +59,13 @@ func _change_state(new_state):
 		_characterInfo.setPosition(position)
 		#TODO is this misleading? Its checking for waypoint exists not the path
 		if _tileMap.hasPath(_characterInfo, _target_position):
+			print("has path")
 			return
 		if !_tileMap.isWalkable(_target_position):
+			print("isnt walkable")
 			return
 		_path = _tileMap.createPath(_characterInfo,_target_position)
-		
+		print("created")
 		if not _path or len(_path) == 1:
 			_change_state(States.IDLE)
 			return
