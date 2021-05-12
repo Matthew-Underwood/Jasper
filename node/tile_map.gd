@@ -14,6 +14,7 @@ var _waypoints: WayPoints
 var _waypointNode
 var _wayPointParentNode
 var _waypointIds
+var _clickedPos
 
 func _ready():
 	_wayPointParentNode = get_tree().get_root().get_node("Node2D/WayPoints")
@@ -27,6 +28,10 @@ func _ready():
 	_pathing = pathingFactory.create(get_used_cells_by_id(0), _map)
 	
 func _draw():
+	for usedCell in get_used_cells_by_id(2):
+		set_cellv(usedCell, -1)
+	for usedCell in get_used_cells_by_id(3):
+		set_cellv(usedCell, -1)
 	if _characterInfo == null:
 		return
 	var id = _characterInfo.getId()
@@ -34,6 +39,12 @@ func _draw():
 	
 	if !_pointPaths.has(id) || _pointPaths[id].empty():
 		return
+	
+	for waypoint in _waypoints.getAll(id):
+		set_cellv(waypoint["end"], 2)
+	
+	if _clickedPos != null and get_cellv(_clickedPos) == 2:
+		set_cellv(_clickedPos, 3)
 		
 	for index in range(1, len(_pointPaths[id])):
 		var previousIndex = index - 1
@@ -45,13 +56,10 @@ func _draw():
 func getPath(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
 	var currentId = _characterInfo.getId()
-	for id in _waypoints.getCharacterIds():
-		_clearPreviousPathDrawing(id)
+#	for id in _waypoints.getCharacterIds():
+#		_clearPreviousPathDrawing(id)
 	_recalculatePath(currentId)
-	if !_waypoints.has(currentId, 0):
-		return
-	for waypoint in _waypoints.getAll(currentId):
-		_addWayPointNode(waypoint["end"])
+	update()
 		
 		
 func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
@@ -70,7 +78,7 @@ func createPath(characterInfo : CharacterInfo, targetPoint : Vector2):
 	self.pathEndPosition = targetPoint
 	
 	_recalculatePath(currentId)
-	
+	update()
 	for point in _pointPaths[currentId]:
 		var point_world = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
 		pathWorld.append(point_world)
@@ -82,17 +90,27 @@ func _process(delta : float):
 		return
 	var id = _characterInfo.getId()
 	if Input.is_action_just_pressed("confirm_click"):
-		var mousePos = world_to_map(get_viewport().get_mouse_position())
+		var worldPos = get_viewport().get_mouse_position()
+		var mousePos = world_to_map(worldPos)
 		if _mousePositionMatchesCharacter(mousePos):
 			return
+		if !isWalkable(worldPos):
+			return
 		_waypointIds = _waypoints.hasPosition(id, mousePos)
+		_clickedPos = mousePos
+			
 	#TODO return false if null in WayPoint class
 	if Input.is_action_pressed("confirm_click") && _waypointIds != null && !_waypointIds.empty():
-		var mousePos = world_to_map(get_viewport().get_mouse_position())
+		var worldPos = get_viewport().get_mouse_position()
+		var mousePos = world_to_map(worldPos)
+		_clickedPos = mousePos
 		if _mousePositionMatchesCharacter(mousePos):
+			return
+		if !isWalkable(worldPos):
 			return
 		_waypoints.updatePosition(id, _waypointIds, mousePos)
 		_recalculatePath(id)
+		update()
 
 func _recalculatePath(id : int):
 	if !_waypoints.has(id, 0):
@@ -107,14 +125,13 @@ func _recalculatePath(id : int):
 		for point in points:
 			pointPaths.append(point)
 	_pointPaths[id] = pointPaths
-	update()
 	
 func _clearPreviousPathDrawing(id : int):
 	if !_waypoints.has(id, 0):
 		return
-		
-	for wayPoint in _wayPointParentNode.get_children():
-		wayPoint.queue_free()
+	for usedCell in get_used_cells_by_id(2):
+		set_cellv(usedCell, -1)
+	
 	update()
 	
 func _setPathStartPosition(value):
@@ -136,19 +153,7 @@ func _setPathEndPosition(value):
 	else:
 		var lastItem = _waypoints.getLastItem(_characterInfo.getId())
 		_waypoints.add(_characterInfo.getId(), lastItem["end"], value)
-	_addWayPointNode(value)
 	pathEndPosition = value
 	
 func _mousePositionMatchesCharacter(mousePos : Vector2) -> bool:
 	return mousePos == world_to_map(_characterInfo.getPosition())
-	
-func _getTileMapCentrePoint(mapPoint : Vector2) -> Vector2:
-	var x = mapPoint.x * cell_size.x + (cell_size.x / 2)
-	var y = mapPoint.y * cell_size.y + (cell_size.y / 2)
-	return Vector2(x, y)
-	
-func _addWayPointNode(mapPoint : Vector2):
-	var waypointNode = _waypointNode.instance()
-	waypointNode.position = _getTileMapCentrePoint(mapPoint)
-	waypointNode.setTileMap(self)
-	_wayPointParentNode.add_child(waypointNode)	
