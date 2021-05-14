@@ -15,7 +15,6 @@ var _waypointIds
 var _clickedPos
 
 func _ready():
-	
 	var pathingFactory = load("res://classes/pathing_factory.gd")
 	var waypoints = load("res://classes/pathing/waypoints.gd")
 	var map = load("res://classes/map.gd")
@@ -26,7 +25,6 @@ func _ready():
 	
 	
 func _draw():
-	
 	if _characterInfo == null:
 		return
 	
@@ -51,8 +49,8 @@ func _draw():
 		draw_line(lastPoint, currentPoint, colour, BASE_LINE_WIDTH, true)
 		draw_circle(currentPoint, BASE_LINE_WIDTH * 2.0, colour)
 		
+		
 func _process(delta : float):
-	
 	if _characterInfo == null:
 		return
 	var id = _characterInfo.getId()
@@ -79,25 +77,21 @@ func _process(delta : float):
 
 
 func getPath(characterInfo : CharacterInfo) -> void:
-	
 	_characterInfo = characterInfo
 	_recalculatePath()
 	update()
 
 
 func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
-	
 	var worldPos = world_to_map(targetPoint)
 	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
 
 
 func isWalkable(pos : Vector2) -> bool:
-	
 	return _pathing.isWalkable(world_to_map(pos))
 
 
 func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> Array:
-	
 	_characterInfo = characterInfo
 	var currentId = characterInfo.getId()
 	var pathWorld = []
@@ -113,8 +107,7 @@ func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> Array:
 	return pathWorld
 
 
-func _recalculatePath():
-	
+func _recalculatePath() -> void:
 	var id = _characterInfo.getId()
 	if !_waypoints.has(id, 0):
 		return
@@ -130,8 +123,7 @@ func _recalculatePath():
 	_pointPaths[id] = pointPaths
 
 
-func _setPathStartPosition(value):
-	
+func _setPathStartPosition(value) -> void:
 	value = world_to_map(value)
 	if value in _obstacles:
 		return
@@ -140,8 +132,7 @@ func _setPathStartPosition(value):
 	pathStartPosition = value
 
 
-func _setPathEndPosition(value):
-	
+func _setPathEndPosition(value) -> void:
 	value = world_to_map(value)
 	if value in _obstacles:
 		return
@@ -156,12 +147,10 @@ func _setPathEndPosition(value):
 
 
 func _mousePositionMatchesCharacter(mousePos : Vector2) -> bool:
-	
 	return mousePos == world_to_map(_characterInfo.getPosition())
 
 
 func _clearCellsById(id : int) -> void:
-	
 	for usedCell in get_used_cells_by_id(id):
 		set_cellv(usedCell, -1)
 

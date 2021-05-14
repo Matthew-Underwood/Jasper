@@ -7,9 +7,10 @@ func _init(aStar : AStar, map : Map):
 	_aStar = aStar
 	_map = map
 
+
 # Loops through all cells within the map's bounds and
 # adds all points to the _aStar, except the obstacles.
-func addWalkableCells(obstacleList = []):
+func addWalkableCells(obstacleList = []) -> Array:
 	var pointsArray = []
 	for y in range(_map.getSize().y):
 		for x in range(_map.getSize().x):
@@ -27,6 +28,7 @@ func addWalkableCells(obstacleList = []):
 			_aStar.add_point(pointIndex, Vector3(point.x, point.y, 0.0))
 	return pointsArray
 
+
 func isWalkable(point : Vector2) -> bool:
 	var pointIndex = _calculatePointIndex(point)
 	return _aStar.has_point(pointIndex)
@@ -37,7 +39,7 @@ func isWalkable(point : Vector2) -> bool:
 # to create walkable graphs however you'd like.
 # It's a little harder to code at first, but works for 2d, 3d,
 # orthogonal grids, hex grids, tower defense games...
-func connectWalkableCells(pointsArray):
+func connectWalkableCells(pointsArray : Array) -> void:
 	for point in pointsArray:
 		var pointIndex = _calculatePointIndex(point)
 		# For every cell in the map, we check the one to the top, right.
@@ -64,7 +66,7 @@ func connectWalkableCells(pointsArray):
 
 # This is a variation of the method above.
 # It connects cells horizontally, vertically AND diagonally.
-func connectWalkableCells_diagonal(pointsArray):
+func connectWalkableCells_diagonal(pointsArray : Array) -> void:
 	for point in pointsArray:
 		var pointIndex = _calculatePointIndex(point)
 		for local_y in range(3):
@@ -77,12 +79,14 @@ func connectWalkableCells_diagonal(pointsArray):
 					continue
 				_aStar.connect_points(pointIndex, pointRelativeIndex, true)
 
+
 func getPath(pathStartPosition : Vector2, pathEndPosition : Vector2):
 	var startPointIndex = _calculatePointIndex(pathStartPosition)
 	var endPointIndex = _calculatePointIndex(pathEndPosition)
 	if !_aStar.has_point(startPointIndex) or !_aStar.has_point(endPointIndex):
 		return null
 	return _aStar.get_point_path(startPointIndex, endPointIndex)
+
 
 func _calculatePointIndex(point):
 	return point.x + _map.getSize().x * point.y

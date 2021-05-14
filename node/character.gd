@@ -18,14 +18,18 @@ var _tileMap : TileMap
 func _ready():
 	_change_state(States.IDLE)
 
+
 func setCharacterInfo(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
+	
 	
 func setTileMap(tileMap : TileMap):
 	_tileMap = tileMap
 	
+	
 func getCharacterInfo():
 	return _characterInfo
+	
 	
 func _unhandled_input(event):
 	if Input.is_action_just_pressed("confirm_click"):
@@ -65,9 +69,12 @@ func _on_Area2D_mouse_entered():
 	for character in characters:
 		character.set_process_unhandled_input(false)
 
+
 func _on_Area2D_mouse_exited():
 	set_process_unhandled_input(true)
+
 
 func _on_Area2D_input_event(viewport, event, shape_idx):
 	if event.is_action_pressed("confirm_click"):
 		_tileMap.getPath(_characterInfo)
+
