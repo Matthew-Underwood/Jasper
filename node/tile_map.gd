@@ -11,29 +11,27 @@ var pathEndPosition = Vector2() setget _setPathEndPosition
 var _pathing : Pathing
 var _obstacles : Array
 var _waypoints: WayPoints
-var _waypointNode
-var _wayPointParentNode
 var _waypointIds
 var _clickedPos
 
 func _ready():
-	_wayPointParentNode = get_tree().get_root().get_node("Node2D/WayPoints")
+	
 	var pathingFactory = load("res://classes/pathing_factory.gd")
 	var waypoints = load("res://classes/pathing/waypoints.gd")
 	var map = load("res://classes/map.gd")
-	_waypointNode = load("res://scenes/waypoint.tscn")
 	_waypoints = waypoints.new()
 	_map = map.new(Vector2(32, 19))
 	pathingFactory = pathingFactory.new()
 	_pathing = pathingFactory.create(get_used_cells_by_id(0), _map)
 	
+	
 func _draw():
-	for usedCell in get_used_cells_by_id(2):
-		set_cellv(usedCell, -1)
-	for usedCell in get_used_cells_by_id(3):
-		set_cellv(usedCell, -1)
+	
 	if _characterInfo == null:
 		return
+	
+	_clearCellsById(2)
+	_clearCellsById(3)
 	var id = _characterInfo.getId()
 	var colour = _characterInfo.getColour()
 	
@@ -53,66 +51,71 @@ func _draw():
 		draw_line(lastPoint, currentPoint, colour, BASE_LINE_WIDTH, true)
 		draw_circle(currentPoint, BASE_LINE_WIDTH * 2.0, colour)
 		
-func getPath(characterInfo : CharacterInfo):
-	_characterInfo = characterInfo
-	var currentId = _characterInfo.getId()
-#	for id in _waypoints.getCharacterIds():
-#		_clearPreviousPathDrawing(id)
-	_recalculatePath(currentId)
-	update()
-		
-		
-func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
-	var worldPos = world_to_map(targetPoint)
-	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
-	
-func isWalkable(targetPoint : Vector2) -> bool:
-	var worldPos = world_to_map(targetPoint)
-	return _pathing.isWalkable(worldPos)
-	
-func createPath(characterInfo : CharacterInfo, targetPoint : Vector2):
-	_characterInfo = characterInfo
-	var currentId = characterInfo.getId()
-	var pathWorld = []
-	self.pathStartPosition = _characterInfo.getPosition()
-	self.pathEndPosition = targetPoint
-	
-	_recalculatePath(currentId)
-	update()
-	for point in _pointPaths[currentId]:
-		var point_world = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
-		pathWorld.append(point_world)
-	return pathWorld
-	
-
 func _process(delta : float):
+	
 	if _characterInfo == null:
 		return
 	var id = _characterInfo.getId()
 	if Input.is_action_just_pressed("confirm_click"):
-		var worldPos = get_viewport().get_mouse_position()
-		var mousePos = world_to_map(worldPos)
+		var mousePos = world_to_map(get_viewport().get_mouse_position())
 		if _mousePositionMatchesCharacter(mousePos):
 			return
-		if !isWalkable(worldPos):
+		if !_pathing.isWalkable(mousePos):
 			return
 		_waypointIds = _waypoints.hasPosition(id, mousePos)
 		_clickedPos = mousePos
 			
 	#TODO return false if null in WayPoint class
 	if Input.is_action_pressed("confirm_click") && _waypointIds != null && !_waypointIds.empty():
-		var worldPos = get_viewport().get_mouse_position()
-		var mousePos = world_to_map(worldPos)
+		var mousePos = world_to_map(get_viewport().get_mouse_position())
 		_clickedPos = mousePos
 		if _mousePositionMatchesCharacter(mousePos):
 			return
-		if !isWalkable(worldPos):
+		if !_pathing.isWalkable(mousePos):
 			return
 		_waypoints.updatePosition(id, _waypointIds, mousePos)
-		_recalculatePath(id)
+		_recalculatePath()
 		update()
 
-func _recalculatePath(id : int):
+
+func getPath(characterInfo : CharacterInfo) -> void:
+	
+	_characterInfo = characterInfo
+	_recalculatePath()
+	update()
+
+
+func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
+	
+	var worldPos = world_to_map(targetPoint)
+	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
+
+
+func isWalkable(pos : Vector2) -> bool:
+	
+	return _pathing.isWalkable(world_to_map(pos))
+
+
+func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> Array:
+	
+	_characterInfo = characterInfo
+	var currentId = characterInfo.getId()
+	var pathWorld = []
+	self.pathStartPosition = _characterInfo.getPosition()
+	self.pathEndPosition = targetPoint
+	
+	_recalculatePath()
+	update()
+	
+	for point in _pointPaths[currentId]:
+		var pointWorld = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
+		pathWorld.append(pointWorld)
+	return pathWorld
+
+
+func _recalculatePath():
+	
+	var id = _characterInfo.getId()
 	if !_waypoints.has(id, 0):
 		return
 		
@@ -125,16 +128,10 @@ func _recalculatePath(id : int):
 		for point in points:
 			pointPaths.append(point)
 	_pointPaths[id] = pointPaths
-	
-func _clearPreviousPathDrawing(id : int):
-	if !_waypoints.has(id, 0):
-		return
-	for usedCell in get_used_cells_by_id(2):
-		set_cellv(usedCell, -1)
-	
-	update()
-	
+
+
 func _setPathStartPosition(value):
+	
 	value = world_to_map(value)
 	if value in _obstacles:
 		return
@@ -142,7 +139,9 @@ func _setPathStartPosition(value):
 		return
 	pathStartPosition = value
 
+
 func _setPathEndPosition(value):
+	
 	value = world_to_map(value)
 	if value in _obstacles:
 		return
@@ -154,6 +153,15 @@ func _setPathEndPosition(value):
 		var lastItem = _waypoints.getLastItem(_characterInfo.getId())
 		_waypoints.add(_characterInfo.getId(), lastItem["end"], value)
 	pathEndPosition = value
-	
+
+
 func _mousePositionMatchesCharacter(mousePos : Vector2) -> bool:
+	
 	return mousePos == world_to_map(_characterInfo.getPosition())
+
+
+func _clearCellsById(id : int) -> void:
+	
+	for usedCell in get_used_cells_by_id(id):
+		set_cellv(usedCell, -1)
+
