@@ -8,8 +8,8 @@ export(float) var speed = 120.0
 var _state = null
 
 var _path = []
-var _target_point_world = Vector2()
-var _target_position = Vector2()
+var _targetPointWorld = Vector2()
+var _targetPosition = Vector2()
 
 var _velocity = Vector2()
 var _characterInfo : CharacterInfo
@@ -27,49 +27,37 @@ func setTileMap(tileMap : TileMap):
 func getCharacterInfo():
 	return _characterInfo
 	
-#func _process(_delta):
-#	if _state != States.FOLLOW:
-#		return
-#	var _arrived_to_next_point = _move_to(_target_point_world)
-#	if _arrived_to_next_point:
-#		_path.remove(0)
-#		if len(_path) == 0:
-#			_change_state(States.IDLE)
-#			return
-#		_target_point_world = _path[0]
-
 func _unhandled_input(event):
 	if Input.is_action_just_pressed("confirm_click"):
-		var global_mouse_pos = get_global_mouse_position()
-		_target_position = global_mouse_pos
+		_targetPosition = get_global_mouse_position()
 		_change_state(States.FOLLOW)
 
 
-func _move_to(world_position):
-	var desired_velocity = (world_position - position).normalized() * speed
-	var steering = desired_velocity - _velocity
+func _move_to(worldPosition):
+	var desiredVelocity = (worldPosition - position).normalized() * speed
+	var steering = desiredVelocity - _velocity
 	_velocity += steering / MASS
 	position += _velocity * get_process_delta_time()
 	rotation = _velocity.angle()
-	return position.distance_to(world_position) < ARRIVE_DISTANCE
+	return position.distance_to(worldPosition) < ARRIVE_DISTANCE
 
 
-func _change_state(new_state):
-	if new_state == States.FOLLOW:
+func _change_state(newState):
+	if newState == States.FOLLOW:
 		_characterInfo.setPosition(position)
 		#TODO is this misleading? Its checking for waypoint exists not the path
-		if _tileMap.hasPath(_characterInfo, _target_position):
+		if _tileMap.hasPath(_characterInfo, _targetPosition):
 			return
-		if !_tileMap.isWalkable(_target_position):
+		if !_tileMap.isWalkable(_targetPosition):
 			return
-		_path = _tileMap.createPath(_characterInfo,_target_position)
+		_path = _tileMap.createPath(_characterInfo, _targetPosition)
 		if not _path or len(_path) == 1:
 			_change_state(States.IDLE)
 			return
 		# The index 0 is the starting cell.
 		# We don't want the character to move back to it in this example.
-		_target_point_world = _path[1]
-	_state = new_state
+		_targetPointWorld = _path[1]
+	_state = newState
 
 
 func _on_Area2D_mouse_entered():
