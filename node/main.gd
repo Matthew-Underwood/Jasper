@@ -10,7 +10,6 @@ func _ready():
 	var charactersNode = get_node("Characters")
 	var tileMap = get_node("TileMap")
 	
-	
 	for characterNum in range(characterPositions.size()):
 		var characterNode = characterScene.instance()
 		var characterInfoInstance = characterInfo.new(characterNum, characterColours[characterNum])
