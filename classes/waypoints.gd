@@ -24,6 +24,37 @@ func getCharacterIds() -> Array:
 	for id in _waypoints:
 		ids.append(id)
 	return ids
+	
+func remove(characterId : int, pos : Vector2):
+	var ids = hasPosition(characterId, pos)
+	var position
+	var idToRemove
+	var previousWaypointPosition
+	var positionType
+	
+	if ids.empty():
+		return false
+		
+	if ids.size() == 2:
+		position = getItem(characterId, ids[1])
+		idToRemove = ids[1]
+		positionType = "start"
+		
+	else:
+		position = getItem(characterId, ids[0])
+		idToRemove = ids[0]
+		positionType = "end"
+		
+		
+	_waypoints[characterId][ids[0]]["end"] = position["end"]
+	_waypoints[characterId].remove(idToRemove)
+	if idToRemove != 0:
+		previousWaypointPosition = _waypoints[characterId][idToRemove - 1][positionType]
+		
+	
+	return previousWaypointPosition
+	
+		
 
 
 func getLastItem(characterId : int) -> Dictionary:

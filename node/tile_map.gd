@@ -74,6 +74,14 @@ func _process(delta : float):
 		_waypoints.updatePosition(id, _waypointIds, mousePos)
 		_recalculatePath()
 		update()
+		
+	if Input.is_action_just_pressed("delete_waypoint") and _clickedPos != null:
+		set_cellv(_clickedPos, -1)
+		var previousWaypointPos = _waypoints.remove(id, _clickedPos)
+		if typeof(previousWaypointPos) == TYPE_VECTOR2:
+			_clickedPos = previousWaypointPos
+		_recalculatePath()
+		update()
 
 
 func getPath(characterInfo : CharacterInfo) -> void:
@@ -108,11 +116,11 @@ func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> Array:
 
 
 func _recalculatePath() -> void:
+	var pointPaths = []
 	var id = _characterInfo.getId()
 	if !_waypoints.has(id, 0):
+		_pointPaths[id] = pointPaths
 		return
-		
-	var pointPaths = []
 	
 	for waypoint in _waypoints.getAll(id):
 		var points = _pathing.getPath(waypoint["start"], waypoint["end"])
