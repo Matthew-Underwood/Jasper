@@ -15,8 +15,8 @@ var _waypointIds
 var _clickedPos
 
 func _ready():
-	var pathingFactory = load("res://classes/pathing_factory.gd")
-	var waypoints = load("res://classes/pathing/waypoints.gd")
+	var pathingFactory = load("res://classes/pathing/pathing_factory.gd")
+	var waypoints = load("res://classes/waypoints.gd")
 	var map = load("res://classes/map.gd")
 	_waypoints = waypoints.new()
 	_map = map.new(Vector2(32, 19))

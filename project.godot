@@ -22,17 +22,17 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "Pathing",
 "language": "GDScript",
-"path": "res://classes/pathing.gd"
+"path": "res://classes/pathing/pathing.gd"
 }, {
 "base": "Reference",
 "class": "PathingFactory",
 "language": "GDScript",
-"path": "res://classes/pathing_factory.gd"
+"path": "res://classes/pathing/pathing_factory.gd"
 }, {
 "base": "Reference",
 "class": "WayPoints",
 "language": "GDScript",
-"path": "res://classes/pathing/waypoints.gd"
+"path": "res://classes/waypoints.gd"
 } ]
 _global_script_class_icons={
 "CharacterInfo": "",
