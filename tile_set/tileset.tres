@@ -4,10 +4,8 @@
 [ext_resource path="res://sprites/level/obstacle.png" type="Texture" id=2]
 [ext_resource path="res://sprites/waypoints/path_end.png" type="Texture" id=3]
 
-
 [sub_resource type="StreamTexture" id=1]
 flags = 4
-load_path = "res://.import/path_start.png-475bd0b469629aa8779d506c5134e5c2.stex"
 
 [resource]
 0/name = "obstacle.png 0"
