@@ -60,7 +60,7 @@ func _process(delta : float):
 			return
 		if !_pathing.isWalkable(mousePos):
 			return
-		_waypointIds = _waypoints.hasPosition(id, mousePos)
+		_waypointIds = _waypoints.getIdsFromPosition(id, mousePos)
 		_clickedPos = mousePos
 			
 	#TODO return false if null in WayPoint class
@@ -92,7 +92,7 @@ func getPath(characterInfo : CharacterInfo) -> void:
 
 func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
 	var worldPos = world_to_map(targetPoint)
-	return !_waypoints.hasPosition(characterInfo.getId(), worldPos).empty()
+	return !_waypoints.getIdsFromPosition(characterInfo.getId(), worldPos).empty()
 
 
 func isWalkable(pos : Vector2) -> bool:
