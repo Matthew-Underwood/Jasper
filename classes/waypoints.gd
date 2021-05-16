@@ -26,37 +26,31 @@ func getCharacterIds() -> Array:
 	return ids
 	
 func remove(characterId : int, pos : Vector2):
-	var ids = hasPosition(characterId, pos)
-	var position
+	var ids = getIdsFromPosition(characterId, pos)
+	var waypoint
 	var idToRemove
 	var previousWaypointPosition
 	var positionType
-	
 	if ids.empty():
 		return false
 		
 	if ids.size() == 2:
-		position = getItem(characterId, ids[1])
 		idToRemove = ids[1]
 		positionType = "start"
 		
 	else:
-		position = getItem(characterId, ids[0])
 		idToRemove = ids[0]
 		positionType = "end"
 		
-		
-	_waypoints[characterId][ids[0]]["end"] = position["end"]
+	waypoint = getItem(characterId, idToRemove)
+	_waypoints[characterId][ids[0]]["end"] = waypoint["end"]
 	_waypoints[characterId].remove(idToRemove)
 	if idToRemove != 0:
 		previousWaypointPosition = _waypoints[characterId][idToRemove - 1][positionType]
 		
-	
 	return previousWaypointPosition
 	
-		
-
-
+	
 func getLastItem(characterId : int) -> Dictionary:
 	var size = _waypoints[characterId].size() - 1
 	return _waypoints[characterId][size]
@@ -70,8 +64,7 @@ func has(characterId : int, waypointId : int) -> bool:
 	return waypointId <= (_waypoints[characterId].size() - 1)
 	
 	
-#TODO update this to return array of the index and start or end of the one to update
-func hasPosition(characterId : int, pos : Vector2) -> Array:
+func getIdsFromPosition(characterId : int, pos : Vector2) -> Array:
 	var found = []
 	var count = 0
 	if !has(characterId, 0):
