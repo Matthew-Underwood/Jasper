@@ -66,7 +66,7 @@ func connectWalkableCells(pointsArray : Array) -> void:
 
 # This is a variation of the method above.
 # It connects cells horizontally, vertically AND diagonally.
-func connectWalkableCells_diagonal(pointsArray : Array) -> void:
+func connectWalkableCellsDiagonal(pointsArray : Array) -> void:
 	for point in pointsArray:
 		var pointIndex = _calculatePointIndex(point)
 		for local_y in range(3):
