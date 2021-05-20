@@ -8,8 +8,6 @@ export(float) var speed = 120.0
 var _state = null
 
 var _path = []
-var _targetPointWorld = Vector2()
-var _targetPosition = Vector2()
 var _startingPosition = Vector2()
 
 var _velocity = Vector2()
@@ -41,7 +39,6 @@ func setCharacterInfo(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
 
 
-#TODO this is going to evolve over time. 
 func resetToStartingPosition() -> void:
 	position = _startingPosition
 
@@ -60,17 +57,17 @@ func getCharacterInfo():
 	
 func _unhandled_input(event):
 	if Input.is_action_just_pressed("confirm_click"):
-		_targetPosition = get_global_mouse_position()
+		var targetPosition = get_global_mouse_position()
 		_characterInfo.setPosition(position)
 		#TODO is this misleading? Its checking for waypoint exists not the path
-		if _tileMap.hasPath(_characterInfo, _targetPosition):
+		if _tileMap.hasPath(_characterInfo, targetPosition):
 			return
-		if !_tileMap.isWalkable(_targetPosition):
+		if !_tileMap.isWalkable(targetPosition):
 			return
-		_tileMap.createPath(_characterInfo, _targetPosition)
+		_tileMap.createPath(_characterInfo, targetPosition)
 
 
-func _move_to(worldPosition):
+func _move_to(worldPosition : Vector2) -> bool:
 	var desiredVelocity = (worldPosition - position).normalized() * speed
 	var steering = desiredVelocity - _velocity
 	_velocity += steering / MASS
@@ -79,17 +76,17 @@ func _move_to(worldPosition):
 	return position.distance_to(worldPosition) < ARRIVE_DISTANCE
 
 
-func _on_Area2D_mouse_entered():
+func _on_Area2D_mouse_entered() -> void:
 	var characters = get_tree().get_nodes_in_group("characters")
 	for character in characters:
 		character.set_process_unhandled_input(false)
 
 
-func _on_Area2D_mouse_exited():
+func _on_Area2D_mouse_exited() -> void:
 	set_process_unhandled_input(true)
 
 
-func _on_Area2D_input_event(viewport, event, shape_idx):
+func _on_Area2D_input_event(viewport, event, shape_idx) -> void:
 	if event.is_action_pressed("confirm_click"):
 		_tileMap.showPath(_characterInfo)
 
