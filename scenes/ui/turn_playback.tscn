@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://scenes/ui/turn_playback.gd" type="Script" id=1]
+
+[node name="Control" type="Control"]
+anchor_right = 0.25
+anchor_bottom = 0.107
+margin_bottom = -0.200005
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 0.75
+anchor_bottom = 1.0
+margin_right = -1.52588e-05
+rect_min_size = Vector2( 192, 64 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSplitContainer" type="GridContainer" parent="Panel"]
+margin_left = 16.0
+margin_top = 20.0
+margin_right = 171.0
+margin_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_constants/hseparation = 20
+columns = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Back" type="Button" parent="Panel/HSplitContainer"]
+margin_right = 42.0
+margin_bottom = 20.0
+text = "Back"
+
+[node name="Play" type="Button" parent="Panel/HSplitContainer"]
+margin_left = 62.0
+margin_right = 100.0
+margin_bottom = 20.0
+text = "Play"
+
+[node name="End" type="Button" parent="Panel/HSplitContainer"]
+margin_left = 120.0
+margin_right = 155.0
+margin_bottom = 20.0
+text = "End"
+
+[connection signal="button_up" from="Panel/HSplitContainer/Back" to="." method="_on_Back_button_up"]
+[connection signal="button_up" from="Panel/HSplitContainer/Play" to="." method="_on_Play_button_up"]
