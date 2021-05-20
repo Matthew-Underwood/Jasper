@@ -8,24 +8,48 @@ export(float) var speed = 120.0
 var _state = null
 
 var _path = []
-var _targetPointWorld = Vector2()
-var _targetPosition = Vector2()
+var _startingPosition = Vector2()
 
 var _velocity = Vector2()
 var _characterInfo : CharacterInfo
 var _tileMap : TileMap
+var _pathIndex = 1
+
 
 func _ready():
-	_change_state(States.IDLE)
+	add_to_group("characters")
+	_startingPosition = position
+
+
+func _process(_delta):
+	if _state != States.FOLLOW:
+		return
+	var path = _tileMap.getPath(_characterInfo)
+	var targetPoint = path[_pathIndex]
+	var arrivedToNextPoint = _move_to(targetPoint)
+	if arrivedToNextPoint:
+		_pathIndex = _pathIndex + 1
+		if _pathIndex == (path.size()):
+			_pathIndex = 1
+			setState(States.IDLE)
+			return
 
 
 func setCharacterInfo(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
-	
+
+
+func resetToStartingPosition() -> void:
+	position = _startingPosition
+
 	
 func setTileMap(tileMap : TileMap):
 	_tileMap = tileMap
-	
+
+
+func setState(state):
+	_state = state
+
 	
 func getCharacterInfo():
 	return _characterInfo
@@ -33,11 +57,17 @@ func getCharacterInfo():
 	
 func _unhandled_input(event):
 	if Input.is_action_just_pressed("confirm_click"):
-		_targetPosition = get_global_mouse_position()
-		_change_state(States.FOLLOW)
+		var targetPosition = get_global_mouse_position()
+		_characterInfo.setPosition(position)
+		#TODO is this misleading? Its checking for waypoint exists not the path
+		if _tileMap.hasPath(_characterInfo, targetPosition):
+			return
+		if !_tileMap.isWalkable(targetPosition):
+			return
+		_tileMap.createPath(_characterInfo, targetPosition)
 
 
-func _move_to(worldPosition):
+func _move_to(worldPosition : Vector2) -> bool:
 	var desiredVelocity = (worldPosition - position).normalized() * speed
 	var steering = desiredVelocity - _velocity
 	_velocity += steering / MASS
@@ -46,35 +76,17 @@ func _move_to(worldPosition):
 	return position.distance_to(worldPosition) < ARRIVE_DISTANCE
 
 
-func _change_state(newState):
-	if newState == States.FOLLOW:
-		_characterInfo.setPosition(position)
-		#TODO is this misleading? Its checking for waypoint exists not the path
-		if _tileMap.hasPath(_characterInfo, _targetPosition):
-			return
-		if !_tileMap.isWalkable(_targetPosition):
-			return
-		_path = _tileMap.createPath(_characterInfo, _targetPosition)
-		if not _path or len(_path) == 1:
-			_change_state(States.IDLE)
-			return
-		# The index 0 is the starting cell.
-		# We don't want the character to move back to it in this example.
-		_targetPointWorld = _path[1]
-	_state = newState
-
-
-func _on_Area2D_mouse_entered():
+func _on_Area2D_mouse_entered() -> void:
 	var characters = get_tree().get_nodes_in_group("characters")
 	for character in characters:
 		character.set_process_unhandled_input(false)
 
 
-func _on_Area2D_mouse_exited():
+func _on_Area2D_mouse_exited() -> void:
 	set_process_unhandled_input(true)
 
 
-func _on_Area2D_input_event(viewport, event, shape_idx):
+func _on_Area2D_input_event(viewport, event, shape_idx) -> void:
 	if event.is_action_pressed("confirm_click"):
-		_tileMap.getPath(_characterInfo)
+		_tileMap.showPath(_characterInfo)
 

@@ -84,7 +84,7 @@ func _process(delta : float):
 		update()
 
 
-func getPath(characterInfo : CharacterInfo) -> void:
+func showPath(characterInfo : CharacterInfo) -> void:
 	_characterInfo = characterInfo
 	_recalculatePath()
 	update()
@@ -97,23 +97,25 @@ func hasPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> bool:
 
 func isWalkable(pos : Vector2) -> bool:
 	return _pathing.isWalkable(world_to_map(pos))
-
-
-func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> Array:
-	_characterInfo = characterInfo
+	
+	
+func getPath(characterInfo : CharacterInfo) -> Array:
 	var currentId = characterInfo.getId()
 	var pathWorld = []
-	self.pathStartPosition = _characterInfo.getPosition()
-	self.pathEndPosition = targetPoint
-	
-	_recalculatePath()
-	update()
-	
 	for point in _pointPaths[currentId]:
 		var pointWorld = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
 		pathWorld.append(pointWorld)
 	return pathWorld
 
+
+func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> void:
+	_characterInfo = characterInfo
+	var currentId = characterInfo.getId()
+	var pathWorld = []
+	self.pathStartPosition = _characterInfo.getPosition()
+	self.pathEndPosition = targetPoint
+	_recalculatePath()
+	update()
 
 func _recalculatePath() -> void:
 	var pointPaths = []
