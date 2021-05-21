@@ -8,7 +8,9 @@ export(float) var speed = 120.0
 var _state = null
 
 var _path = []
+
 var _startingPosition = Vector2()
+var _facing = Vector2()
 
 var _velocity = Vector2()
 var _characterInfo : CharacterInfo
@@ -18,7 +20,7 @@ var _pathIndex = 1
 
 func _ready():
 	add_to_group("characters")
-	_startingPosition = position
+	storeState()
 
 
 func _process(_delta):
@@ -38,9 +40,14 @@ func _process(_delta):
 func setCharacterInfo(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
 
+func storeState() -> void:
+	_startingPosition = position
+	_facing = rotation
 
-func resetToStartingPosition() -> void:
+
+func resetState() -> void:
 	position = _startingPosition
+	rotation = _facing
 
 	
 func setTileMap(tileMap : TileMap):
