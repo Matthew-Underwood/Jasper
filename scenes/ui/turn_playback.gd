@@ -21,4 +21,4 @@ func _on_Play_button_up():
 
 
 func _on_Back_button_up():
-	get_tree().call_group_flags(2, "characters", "resetToStartingPosition")
+	get_tree().call_group_flags(2, "characters", "resetState")
