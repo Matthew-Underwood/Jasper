@@ -2,6 +2,7 @@ extends TileMap
 
 const BASE_LINE_WIDTH = 1.0
 const DRAW_COLOR = Color.white
+var _characterInfoCollection : Dictionary
 var _characterInfo : CharacterInfo
 var _map : Map
 var _pointPaths : Dictionary
@@ -25,29 +26,37 @@ func _ready():
 	
 	
 func _draw():
-	if _characterInfo == null:
+	if _characterInfoCollection.empty():
 		return
 	
 	_clearCellsById(2)
 	_clearCellsById(3)
-	var id = _characterInfo.getId()
-	var colour = _characterInfo.getColour()
 	
-	if !_pointPaths.has(id) || _pointPaths[id].empty():
-		return
-	
-	for waypoint in _waypoints.getAll(id):
-		set_cellv(waypoint["end"], 2)
-	
-	if _clickedPos != null and get_cellv(_clickedPos) == 2:
-		set_cellv(_clickedPos, 3)
+	for collectionId in _characterInfoCollection:
 		
-	for index in range(1, len(_pointPaths[id])):
-		var previousIndex = index - 1
-		var lastPoint = map_to_world(Vector2(_pointPaths[id][previousIndex].x, _pointPaths[id][previousIndex].y)) + _halfCellSize
-		var currentPoint = map_to_world(Vector2(_pointPaths[id][index].x, _pointPaths[id][index].y)) + _halfCellSize
-		draw_line(lastPoint, currentPoint, colour, BASE_LINE_WIDTH, true)
-		draw_circle(currentPoint, BASE_LINE_WIDTH * 2.0, colour)
+		var characterInfo = _characterInfoCollection[collectionId]
+		var id = characterInfo.getId()
+		var colour
+		if collectionId == _characterInfo.getId():
+			colour = characterInfo.getHighlightedColour()
+		else: 
+			colour = characterInfo.getColour()
+			
+		if !_pointPaths.has(id) || _pointPaths[id].empty():
+			return
+		
+		for waypoint in _waypoints.getAll(id):
+			set_cellv(waypoint["end"], 2)
+		
+		if _clickedPos != null and get_cellv(_clickedPos) == 2:
+			set_cellv(_clickedPos, 3)
+			
+		for index in range(1, len(_pointPaths[id])):
+			var previousIndex = index - 1
+			var lastPoint = map_to_world(Vector2(_pointPaths[id][previousIndex].x, _pointPaths[id][previousIndex].y)) + _halfCellSize
+			var currentPoint = map_to_world(Vector2(_pointPaths[id][index].x, _pointPaths[id][index].y)) + _halfCellSize
+			draw_line(lastPoint, currentPoint, colour, BASE_LINE_WIDTH, true)
+			draw_circle(currentPoint, BASE_LINE_WIDTH * 2.0, colour)
 		
 		
 func _process(delta : float):
@@ -85,7 +94,7 @@ func _process(delta : float):
 
 
 func showPath(characterInfo : CharacterInfo) -> void:
-	_characterInfo = characterInfo
+	_setCharacterInfo(characterInfo)
 	_recalculatePath()
 	update()
 
@@ -109,8 +118,7 @@ func getPath(characterInfo : CharacterInfo) -> Array:
 
 
 func createPath(characterInfo : CharacterInfo, targetPoint : Vector2) -> void:
-	_characterInfo = characterInfo
-	var currentId = characterInfo.getId()
+	_setCharacterInfo(characterInfo)
 	var pathWorld = []
 	self.pathStartPosition = _characterInfo.getPosition()
 	self.pathEndPosition = targetPoint
@@ -132,6 +140,12 @@ func _recalculatePath() -> void:
 			pointPaths.append(point)
 	_pointPaths[id] = pointPaths
 
+func _setCharacterInfo(characterInfo : CharacterInfo) -> void:
+	var id = characterInfo.getId()
+	if !_characterInfoCollection.has(id):
+		_characterInfoCollection[id] = characterInfo
+	
+	_characterInfo = characterInfo
 
 func _setPathStartPosition(value) -> void:
 	value = world_to_map(value)

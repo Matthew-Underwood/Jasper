@@ -12,7 +12,7 @@ func _ready():
 	
 	for characterNum in range(characterPositions.size()):
 		var characterNode = characterScene.instance()
-		var characterInfoInstance = characterInfo.new(characterNum, characterColours[characterNum])
+		var characterInfoInstance = characterInfo.new(characterNum, characterColours[characterNum], Color.aquamarine)
 		characterNode.setTileMap(tileMap)
 		characterNode.setCharacterInfo(characterInfoInstance)
 		characterNode.position = characterPositions[characterNum]
