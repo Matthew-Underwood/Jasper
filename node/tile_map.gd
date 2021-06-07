@@ -5,6 +5,7 @@ const DRAW_COLOR = Color.white
 var _characterInfoCollection : Dictionary
 var _characterInfo : CharacterInfo
 var _map : Map
+var _hideDraw : bool
 var _pointPaths : Dictionary
 var _halfCellSize = cell_size / 2
 var pathStartPosition = Vector2() setget _setPathStartPosition
@@ -31,6 +32,9 @@ func _draw():
 	
 	_clearCellsById(2)
 	_clearCellsById(3)
+	
+	if _hideDraw:
+		return
 	
 	for collectionId in _characterInfoCollection:
 		
@@ -96,6 +100,10 @@ func _process(delta : float):
 func showPath(characterInfo : CharacterInfo) -> void:
 	_setCharacterInfo(characterInfo)
 	_recalculatePath()
+	update()
+	
+func hidePaths(hidden : bool) -> void:
+	_hideDraw = hidden
 	update()
 
 
