@@ -46,6 +46,7 @@ func storeState() -> void:
 
 
 func resetState() -> void:
+	_tileMap.hidePaths(false)
 	position = _startingPosition
 	rotation = _facing
 
@@ -55,6 +56,7 @@ func setTileMap(tileMap : TileMap):
 
 
 func setState(state):
+	_tileMap.hidePaths(false)
 	_state = state
 
 	
