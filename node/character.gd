@@ -27,14 +27,15 @@ func _process(_delta):
 	if _state != States.FOLLOW:
 		return
 	var path = _tileMap.getPath(_characterInfo)
-	var targetPoint = path[_pathIndex]
-	var arrivedToNextPoint = _move_to(targetPoint)
-	if arrivedToNextPoint:
-		_pathIndex = _pathIndex + 1
-		if _pathIndex == (path.size()):
-			_pathIndex = 1
-			setState(States.IDLE)
-			return
+	if !path.empty():
+		var targetPoint = path[_pathIndex]
+		var arrivedToNextPoint = _move_to(targetPoint)
+		if arrivedToNextPoint:
+			_pathIndex = _pathIndex + 1
+			if _pathIndex == (path.size()):
+				_pathIndex = 1
+				setState(States.IDLE)
+				return
 
 
 func setCharacterInfo(characterInfo : CharacterInfo):

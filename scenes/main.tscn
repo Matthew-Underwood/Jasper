@@ -19,8 +19,5 @@ script = ExtResource( 1 )
 
 [node name="Characters" type="Node2D" parent="."]
 
-[node name="Control" parent="." instance=ExtResource( 4 )]
-margin_left = 832.0
-margin_top = 544.0
-margin_right = 832.0
-margin_bottom = 544.0
+[node name="Panel" parent="." instance=ExtResource( 4 )]
+mouse_filter = 2
