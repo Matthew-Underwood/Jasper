@@ -33,7 +33,7 @@ func _process(_delta):
 		if arrivedToNextPoint:
 			_pathIndex = _pathIndex + 1
 			if _pathIndex == (path.size()):
-				_pathIndex = 1
+				_resetPath()
 				setState(States.IDLE)
 				return
 
@@ -48,8 +48,14 @@ func storeState() -> void:
 
 func resetState() -> void:
 	_tileMap.hidePaths(false)
+	setState(States.IDLE)
 	position = _startingPosition
 	rotation = _facing
+	_resetPath()
+	
+func pauseState() -> void:
+	setState(States.IDLE)
+	print("Stop the timer")
 
 	
 func setTileMap(tileMap : TileMap):
@@ -84,6 +90,10 @@ func _move_to(worldPosition : Vector2) -> bool:
 	position += _velocity * get_process_delta_time()
 	rotation = _velocity.angle()
 	return position.distance_to(worldPosition) < ARRIVE_DISTANCE
+	
+	
+func _resetPath():
+	_pathIndex = 1
 
 
 func _on_Area2D_mouse_entered() -> void:
