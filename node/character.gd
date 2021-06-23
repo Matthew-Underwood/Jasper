@@ -55,7 +55,6 @@ func resetState() -> void:
 	
 func pauseState() -> void:
 	setState(States.IDLE)
-	print("Stop the timer")
 
 	
 func setTileMap(tileMap : TileMap):

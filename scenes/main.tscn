@@ -23,5 +23,5 @@ script = ExtResource( 1 )
 mouse_filter = 2
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 3.0
+wait_time = 6.0
 one_shot = true

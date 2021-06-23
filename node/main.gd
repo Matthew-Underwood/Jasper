@@ -11,12 +11,16 @@ func _ready():
 	var timer = get_node("Timer")
 	var tileMap = get_node("TileMap")
 	var playButton = get_node("Panel/Panel/HSplitContainer/Play")
+	var timelineBar = get_node("Panel/TextureProgress")
 	playButton.setTurnTimer(timer)
+	timelineBar.setTurnTimer(timer)
+	playButton.setProgressBar(timelineBar)
 	
 	
 	for characterNum in range(characterPositions.size()):
 		var characterNode = characterScene.instance()
 		timer.connect("timeout", characterNode, "pauseState")
+		timer.connect("timeout", timelineBar, "expireTimer")
 		var characterInfoInstance = characterInfo.new(characterNum, characterColours[characterNum], Color.aquamarine)
 		characterNode.setTileMap(tileMap)
 		characterNode.setCharacterInfo(characterInfoInstance)
