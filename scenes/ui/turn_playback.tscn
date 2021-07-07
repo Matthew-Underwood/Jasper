@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://sprites/ui/playback-slider.png" type="Texture" id=1]
 [ext_resource path="res://node/ui/Play.gd" type="Script" id=2]
 [ext_resource path="res://node/ui/TextureProgress.gd" type="Script" id=3]
 [ext_resource path="res://sprites/ui/playback-bg.png" type="Texture" id=4]
+[ext_resource path="res://scenes/ui/countdown_text.gd" type="Script" id=5]
 
 [node name="Control" type="Control"]
 margin_right = 1024.0
@@ -64,13 +65,27 @@ __meta__ = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 585.0
-max_value = 6.0
 texture_under = ExtResource( 4 )
 texture_progress = ExtResource( 1 )
 nine_patch_stretch = true
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="TextureProgress"]
+
+[node name="CountdownText" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.9
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_top = 43.0
+margin_right = 40.0
+text = "0.0"
+script = ExtResource( 5 )
+__meta__ = {
 "_edit_use_anchors_": false
 }
 

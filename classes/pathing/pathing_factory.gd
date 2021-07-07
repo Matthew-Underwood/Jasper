@@ -5,5 +5,5 @@ func create(obstacles : Array, map : Map) -> Pathing:
 	var pathing = load("res://classes/pathing/pathing.gd")
 	pathing = pathing.new(aStar, map)
 	var walkableTiles = pathing.addWalkableCells(obstacles)
-	pathing.connectWalkableCellsDiagonal(walkableTiles)
 	return pathing
+	pathing.connectWalkableCellsDiagonal(walkableTiles)

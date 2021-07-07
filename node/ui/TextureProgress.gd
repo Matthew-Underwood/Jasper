@@ -2,16 +2,17 @@ extends TextureProgress
 
 var _timer : Timer
 var _completed = false
+var _tween : Tween
+
+func _ready():
+	_tween = get_node("Tween")
 
 func _process(delta):
 	
 	if _timer.is_stopped() && !_completed:
-		value = 0
+		value = min_value
 		return
-	
-	var timeTaken = _timer.get_wait_time() - _timer.get_time_left()
-	value = timeTaken
-		
+	value = max_value - (_timer.time_left / _timer.get_wait_time()) * max_value
 
 func setTurnTimer(timer : Timer):
 	_timer = timer
@@ -19,9 +20,10 @@ func setTurnTimer(timer : Timer):
 func resetProgress():
 	_completed = false
 
-func _on_TextureProgress_value_changed(value):
-	if _timer.get_wait_time() == value:
+func _on_TextureProgress_value_changed(changedValue):
+	if max_value == changedValue:
 		_completed = true
 		
-	if  value == 0:
+	if  changedValue == min_value:
 		_completed = false
+
