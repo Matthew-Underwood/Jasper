@@ -8,10 +8,23 @@ func _ready():
 	var characterScene = preload("res://scenes/character.tscn")
 	var characterInfo = load("res://classes/character_info.gd")
 	var charactersNode = get_node("Characters")
+	var timer = get_node("Timer")
 	var tileMap = get_node("TileMap")
+	var playButton = get_node("Panel/Panel/HSplitContainer/Play")
+	var countDownText = get_node("Panel/CountdownText")
+	var timelineBar = get_node("Panel/TextureProgress")
+	playButton.setTurnTimer(timer)
+	countDownText.setTurnTimer(timer)
+	timelineBar.setTurnTimer(timer)
+	playButton.setProgressBar(timelineBar)
+	timer.connect("timeout", playButton, "changeButton", ["Play"])
+	playButton.connect("change_button", timelineBar, "changeButton")
+	
 	
 	for characterNum in range(characterPositions.size()):
 		var characterNode = characterScene.instance()
+		timer.connect("timeout", characterNode, "pauseState")
+		timer.connect("timeout", timelineBar, "expireTimer")
 		var characterInfoInstance = characterInfo.new(characterNum, characterColours[characterNum], Color.aquamarine)
 		characterNode.setTileMap(tileMap)
 		characterNode.setCharacterInfo(characterInfoInstance)

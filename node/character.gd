@@ -27,14 +27,15 @@ func _process(_delta):
 	if _state != States.FOLLOW:
 		return
 	var path = _tileMap.getPath(_characterInfo)
-	var targetPoint = path[_pathIndex]
-	var arrivedToNextPoint = _move_to(targetPoint)
-	if arrivedToNextPoint:
-		_pathIndex = _pathIndex + 1
-		if _pathIndex == (path.size()):
-			_pathIndex = 1
-			setState(States.IDLE)
-			return
+	if !path.empty():
+		var targetPoint = path[_pathIndex]
+		var arrivedToNextPoint = _move_to(targetPoint)
+		if arrivedToNextPoint:
+			_pathIndex = _pathIndex + 1
+			if _pathIndex == (path.size()):
+				_resetPath()
+				setState(States.IDLE)
+				return
 
 
 func setCharacterInfo(characterInfo : CharacterInfo):
@@ -47,8 +48,13 @@ func storeState() -> void:
 
 func resetState() -> void:
 	_tileMap.hidePaths(false)
+	setState(States.IDLE)
 	position = _startingPosition
 	rotation = _facing
+	_resetPath()
+	
+func pauseState() -> void:
+	setState(States.IDLE)
 
 	
 func setTileMap(tileMap : TileMap):
@@ -83,6 +89,10 @@ func _move_to(worldPosition : Vector2) -> bool:
 	position += _velocity * get_process_delta_time()
 	rotation = _velocity.angle()
 	return position.distance_to(worldPosition) < ARRIVE_DISTANCE
+	
+	
+func _resetPath():
+	_pathIndex = 1
 
 
 func _on_Area2D_mouse_entered() -> void:
