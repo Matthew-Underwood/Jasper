@@ -119,9 +119,10 @@ func isWalkable(pos : Vector2) -> bool:
 func getPath(characterInfo : CharacterInfo) -> Array:
 	var currentId = characterInfo.getId()
 	var pathWorld = []
-	for point in _pointPaths[currentId]:
-		var pointWorld = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
-		pathWorld.append(pointWorld)
+	if _pointPaths.has(currentId):
+		for point in _pointPaths[currentId]:
+			var pointWorld = map_to_world(Vector2(point.x, point.y)) + _halfCellSize
+			pathWorld.append(pointWorld)
 	return pathWorld
 
 
