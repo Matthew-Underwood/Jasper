@@ -1,19 +1,18 @@
 extends Button
 
-var _parent : Control
+var _manager : Control
 
-func setParent(parent : Control):
-	_parent = parent
-	
+func setUiManager(manager : Control):
+	_manager = manager
 
 func _on_Play_button_up():
 	if text == "Play":
-		_parent.startCountDown()
+		_manager.startCountDown()
 		changeButton("Stop")
 		get_tree().call_group_flags(2, "characters", "setState", 1)
 	else:
 		changeButton("Play")
-		_parent.setStatus(true)
+		_manager.setStatus(true)
 		get_tree().call_group_flags(2, "characters", "resetState")
 
 func changeButton(buttonName):

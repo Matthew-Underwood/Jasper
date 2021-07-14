@@ -13,12 +13,12 @@ func _ready():
 	var playButton = get_node("Panel/Panel/HSplitContainer/Play")
 	var countDownText = get_node("Panel/CountdownText")
 	var timelineBar = get_node("Panel/TextureProgress")
-	var parent = get_node("Panel")
-	timer.connect("timeout", parent, "setStatus", [false])
-	parent.setTimer(timer)
-	parent.setLabel(countDownText)
-	parent.setProgressBar(timelineBar)
-	playButton.setParent(parent)
+	var uiManager = get_node("Panel")
+	timer.connect("timeout", uiManager, "setStatus", [false])
+	uiManager.setTimer(timer)
+	uiManager.setLabel(countDownText)
+	uiManager.setProgressBar(timelineBar)
+	playButton.setUiManager(uiManager)
 	
 	
 	for characterNum in range(characterPositions.size()):
