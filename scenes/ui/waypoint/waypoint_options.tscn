@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://node/ui/show_ui.gd" type="Script" id=1]
+
+[node name="WaypointOptions" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -832.0
+margin_bottom = -520.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AimButton" type="Button" parent="."]
+margin_right = 192.0
+margin_bottom = 20.0
+text = "Aim"
+
+[node name="ChangeStanceButton" type="Button" parent="."]
+margin_top = 24.0
+margin_right = 192.0
+margin_bottom = 44.0
+text = "Change stance"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IgnoreTargetsButton" type="Button" parent="."]
+margin_top = 48.0
+margin_right = 192.0
+margin_bottom = 68.0
+text = "Ignore targets"
+
+[node name="WaitButton" type="Button" parent="."]
+margin_top = 72.0
+margin_right = 192.0
+margin_bottom = 92.0
+text = "Wait"
+script = ExtResource( 1 )

@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://node/ui/wait/Label.gd" type="Script" id=1]
+[ext_resource path="res://node/ui/hide_ui.gd" type="Script" id=2]
+
+[node name="WaitUi" type="Control"]
+anchor_right = 0.187
+anchor_bottom = 0.347
+margin_right = 0.511993
+margin_bottom = -0.199997
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConfirmButton" type="Button" parent="."]
+margin_top = 208.0
+margin_right = 128.0
+margin_bottom = 256.0
+text = "Confirm"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+nodePath = NodePath("..")
+
+[node name="HSplitContainer" type="HBoxContainer" parent="."]
+anchor_right = 0.667
+anchor_bottom = 0.923
+margin_right = -0.0640106
+margin_bottom = 0.0159912
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VSlider" type="VSlider" parent="HSplitContainer"]
+margin_right = 16.0
+margin_bottom = 192.0
+max_value = 30.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSplitContainer" type="HBoxContainer" parent="HSplitContainer"]
+margin_left = 20.0
+margin_right = 97.0
+margin_bottom = 192.0
+
+[node name="WaitValueLabel" type="Label" parent="HSplitContainer/HSplitContainer"]
+margin_top = 89.0
+margin_right = 20.0
+margin_bottom = 103.0
+text = "0.0"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MetricLabel" type="Label" parent="HSplitContainer/HSplitContainer"]
+margin_left = 24.0
+margin_top = 89.0
+margin_right = 77.0
+margin_bottom = 103.0
+text = "seconds"
+
+[connection signal="value_changed" from="HSplitContainer/VSlider" to="HSplitContainer/HSplitContainer/WaitValueLabel" method="_on_VSlider_value_changed"]

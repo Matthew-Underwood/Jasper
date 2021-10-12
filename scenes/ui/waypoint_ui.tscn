@@ -1,0 +1,71 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scenes/ui/waypoint/waypoint_options.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/ui/waypoint/stance_options.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/ui/waypoint/wait.tscn" type="PackedScene" id=3]
+[ext_resource path="res://node/waypoint/aim.gd" type="Script" id=4]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1.0
+margin_right = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WaypointOptions" parent="." instance=ExtResource( 1 )]
+anchor_left = 0.5
+anchor_top = 0.5
+margin_right = -384.0
+margin_bottom = -232.0
+
+[node name="AimButton" parent="WaypointOptions" index="0"]
+margin_right = 128.0
+script = ExtResource( 4 )
+
+[node name="ChangeStanceButton" parent="WaypointOptions" index="1"]
+margin_right = 128.0
+nodePath = NodePath("../../Stances")
+
+[node name="IgnoreTargetsButton" parent="WaypointOptions" index="2"]
+margin_right = 128.0
+
+[node name="WaitButton" parent="WaypointOptions" index="3"]
+margin_right = 128.0
+nodePath = NodePath("../../WaitUi")
+
+[node name="Stances" parent="." instance=ExtResource( 2 )]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+margin_left = 144.0
+margin_top = 24.0
+margin_right = -256.0
+margin_bottom = -208.0
+
+[node name="WaitUi" parent="." groups=[
+"UI",
+] instance=ExtResource( 3 )]
+visible = false
+margin_left = 655.0
+margin_top = 162.0
+margin_right = 655.512
+margin_bottom = 161.8
+
+[node name="VSlider" parent="WaitUi/HSplitContainer" index="0"]
+margin_bottom = 191.0
+
+[node name="HSplitContainer" parent="WaitUi/HSplitContainer" index="1"]
+margin_bottom = 191.0
+
+[node name="WaitValueLabel" parent="WaitUi/HSplitContainer/HSplitContainer" index="0"]
+margin_top = 88.0
+margin_bottom = 102.0
+
+[node name="MetricLabel" parent="WaitUi/HSplitContainer/HSplitContainer" index="1"]
+margin_top = 88.0
+margin_bottom = 102.0
+
+[editable path="WaypointOptions"]
+[editable path="WaitUi"]

@@ -15,10 +15,15 @@ var _facing = Vector2()
 var _velocity = Vector2()
 var _characterInfo : CharacterInfo
 var _tileMap : TileMap
+var _waypointUi : Resource
 var _pathIndex = 1
-
+var _selected = false setget ,isSelected
+var _sceneRoot
 
 func _ready():
+	
+	_sceneRoot = get_node("/root/Node2D")
+	_waypointUi = preload("res://scenes/ui/waypoint_ui.tscn")
 	add_to_group("characters")
 	storeState()
 
@@ -37,6 +42,8 @@ func _process(_delta):
 				setState(States.IDLE)
 				return
 
+func isSelected() -> bool:
+	return _selected
 
 func setCharacterInfo(characterInfo : CharacterInfo):
 	_characterInfo = characterInfo
@@ -80,6 +87,14 @@ func _unhandled_input(event):
 		if !_tileMap.isWalkable(targetPosition):
 			return
 		_tileMap.createPath(_characterInfo, targetPosition)
+		
+		var waypointUi = _waypointUi.instance()
+		
+		#TODO need to seperate this out
+		var uiPosition = Vector2(targetPosition.x + 30, targetPosition.y)
+		waypointUi.set_global_position(uiPosition)
+		_sceneRoot.add_child(waypointUi)
+		
 
 
 func _move_to(worldPosition : Vector2) -> bool:
@@ -98,10 +113,12 @@ func _resetPath():
 func _on_Area2D_mouse_entered() -> void:
 	var characters = get_tree().get_nodes_in_group("characters")
 	for character in characters:
+		character._selected = false
 		character.set_process_unhandled_input(false)
 
 
 func _on_Area2D_mouse_exited() -> void:
+	_selected = true
 	set_process_unhandled_input(true)
 
 
